@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETHRA — Human-Centric Habitat Design</title>
+
+<!-- Tab favicon: rocket SVG inline -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23020508'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36' font-family='sans-serif'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,200;0,300;0,400;0,600;1,300&family=Barlow+Condensed:ital,wght@0,200;0,300;0,400;0,600;0,700;1,300&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS — SYSTEMATIC
+══════════════════════════════════════════ */
+:root { --nav-h: 60px; }
+
+[data-theme="dark"] {
+  --bg:           #020508;
+  --bg-panel:     #060d14;
+  --bg-card:      #0a1622;
+  --fg:           #dde8f2;
+  --fg-dim:       rgba(221,232,242,0.50);
+  --fg-faint:     rgba(221,232,242,0.20);
+  --accent:       #4fa3d1;
+  --accent-dim:   rgba(79,163,209,0.26);
+  --accent-faint: rgba(79,163,209,0.07);
+  --accent2:      #e07d3c;
+  --accent3:      #3dc893;
+  --line:         rgba(79,163,209,0.12);
+  --line-mid:     rgba(79,163,209,0.22);
+  --line-bright:  rgba(79,163,209,0.34);
+  --hero-bg:      url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1800&q=80') center/cover no-repeat;
+  --hero-grad:    linear-gradient(105deg,rgba(2,5,8,0.97) 0%,rgba(2,5,8,0.80) 50%,rgba(2,5,8,0.22) 100%);
+  --stars:        1;
+}
+[data-theme="light"] {
+  --bg:           #f4efe5;
+  --bg-panel:     #ece5d4;
+  --bg-card:      #e2d9c5;
+  --fg:           #18120a;
+  --fg-dim:       rgba(24,18,10,0.55);
+  --fg-faint:     rgba(24,18,10,0.28);
+  --accent:       #b85510;
+  --accent-dim:   rgba(184,85,16,0.28);
+  --accent-faint: rgba(184,85,16,0.07);
+  --accent2:      #1a5c8a;
+  --accent3:      #267a4f;
+  --line:         rgba(184,85,16,0.14);
+  --line-mid:     rgba(184,85,16,0.26);
+  --line-bright:  rgba(184,85,16,0.40);
+  --hero-bg:      url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=1800&q=80') center/cover no-repeat;
+  --hero-grad:    linear-gradient(105deg,rgba(244,239,229,0.98) 0%,rgba(244,239,229,0.85) 50%,rgba(244,239,229,0.28) 100%);
+  --stars:        0;
+}
+
+/* ══════════════════════════════════════════
+   BASE RESET
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Barlow', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+  transition: background .5s, color .4s;
+}
+[data-theme="dark"] body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.016) 3px,rgba(0,0,0,0.016) 4px);
+}
+
+/* ══════════════════════════════════════════
+   ROCKET CURSOR — single element, no lag/shadow
+══════════════════════════════════════════ */
+#cursor-rocket {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 30px;
+  height: 30px;
+  /* positioned via JS left/top, offset by half size */
+  margin-left: -15px;
+  margin-top: -15px;
+  will-change: left, top, transform;
+  transition: none; /* no CSS transition — pure JS placement for zero lag */
+}
+#cursor-rocket svg {
+  width: 100%; height: 100%;
+  transition: transform .18s ease;
+  filter: drop-shadow(0 0 4px var(--accent-dim));
+}
+#cursor-rocket.hov svg { transform: scale(1.4); }
+
+/* ══════════════════════════════════════════
+   CANVAS + HUD
+══════════════════════════════════════════ */
+#starfield {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: var(--stars); transition: opacity .7s;
+}
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.hc {
+  position: absolute; width: 14px; height: 14px;
+  border-color: var(--accent-dim); border-style: solid;
+  transition: border-color .4s;
+}
+.hc.tl { top:16px; left:16px; border-width:1px 0 0 1px; }
+.hc.tr { top:16px; right:16px; border-width:1px 1px 0 0; }
+.hc.bl { bottom:16px; left:16px; border-width:0 0 1px 1px; }
+.hc.br { bottom:16px; right:16px; border-width:0 1px 1px 0; }
+
+nav, section, footer, .photo-band { position: relative; z-index: 2; }
+
+/* ══════════════════════════════════════════
+   NAVIGATION — auto-hide on scroll, balanced spacing
+══════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  display: flex; align-items: stretch;
+  border-bottom: 1px solid var(--line);
+  transition: background .5s, border-color .4s, transform .4s cubic-bezier(.4,0,.2,1), opacity .4s ease;
+}
+nav.nav-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+nav.nav-scroll {
+  border-bottom-color: var(--line-bright);
+}
+[data-theme="dark"] nav { background: rgba(2,5,8,0.94); }
+[data-theme="light"] nav { background: rgba(244,239,229,0.96); }
+nav::after {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+}
+
+.nav-logo-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 28px;
+  border-right: 1px solid var(--line);
+  text-decoration: none;
+  flex-shrink: 0; min-width: 120px;
+  transition: border-color .4s, background .2s;
+}
+.nav-logo-wrap:hover { background: var(--accent-faint); }
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+  animation: blink 2.8s ease-in-out infinite;
+  transition: background .4s;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.1} }
+.nav-wordmark {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 1.15rem;
+  letter-spacing: 0.34em; color: var(--fg);
+  transition: color .4s;
+}
+
+.nav-links {
+  display: flex; align-items: stretch;
+  list-style: none; flex: 1;
+  justify-content: center; gap: 0;
+}
+.nav-links li a {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 300; font-size: 0.7rem;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--fg-dim); text-decoration: none;
+  padding: 0 28px;
+  display: flex; align-items: center;
+  transition: color .2s, background .2s;
+}
+.nav-links li a:hover { color: var(--accent); background: var(--accent-faint); }
+
+.nav-actions {
+  display: flex; align-items: stretch;
+  border-left: 1px solid var(--line);
+  flex-shrink: 0;
+  transition: border-color .4s;
+}
+.nav-cta {
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 28px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 400; font-size: 0.7rem;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--accent); text-decoration: none;
+  border-right: 1px solid var(--line);
+  transition: background .2s, color .2s, border-color .4s;
+}
+.nav-cta:hover { background: var(--accent-faint); }
+.nav-theme {
+  cursor: none; background: none; border: none;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 24px;
+  transition: background .2s;
+}
+.nav-theme:hover { background: var(--accent-faint); }
+.nav-theme-icon { font-size: 1rem; line-height: 1; }
+.nav-theme-txt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fg-faint); transition: color .4s; white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════
+   HERO — properly offset, no overlap
+══════════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  padding-top: var(--nav-h); /* exactly clears fixed nav */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--hero-bg);
+  transition: opacity .5s;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--hero-grad);
+  transition: background .5s;
+}
+
+/* Orbital SVG — right side, centred vertically in visible area below nav */
+.hero-orbital {
+  position: absolute;
+  right: -60px;
+  top: calc(50% + var(--nav-h) / 2);
+  transform: translateY(-50%);
+  width: min(600px, 58vw);
+  height: min(600px, 58vw);
+  color: var(--accent);
+  opacity: .17;
+  animation: slowSpin 90s linear infinite;
+  pointer-events: none;
+  transition: color .4s, opacity .4s;
+}
+[data-theme="light"] .hero-orbital { opacity: .24; }
+@keyframes slowSpin { to { transform: translateY(-50%) rotate(360deg); } }
+
+/* telemetry top-right, below nav */
+.hero-telem {
+  position: absolute;
+  top: calc(var(--nav-h) + 24px);
+  right: 40px;
+  z-index: 3;
+  display: flex; flex-direction: column; gap: 7px; align-items: flex-end;
+}
+.ht-row {
+  font-family: 'Share Tech Mono', monospace; font-size: 0.5rem;
+  color: var(--fg-faint); letter-spacing: 0.14em;
+  display: flex; align-items: center; gap: 8px;
+  transition: color .4s;
+}
+.ht-row::before { content: ''; width: 18px; height: 1px; background: var(--line-bright); }
+
+/* Hero text block — sits on bottom of section */
+.hero-body {
+  position: relative; z-index: 3;
+  padding: 0 44px 88px;
+  max-width: 860px;
+}
+.hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace; font-size: 0.56rem;
+  color: var(--accent); letter-spacing: 0.28em; text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0; animation: fadeUp .9s .2s forwards;
+  transition: color .4s;
+}
+.hero-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--accent); }
+
+h1.hero-h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 200;
+  font-size: clamp(5.2rem, 11vw, 12rem);
+  line-height: .88;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+  color: var(--fg);
+  hyphens: none; word-break: keep-all; overflow-wrap: normal;
+  opacity: 0; animation: fadeUp .95s .4s forwards;
+  transition: color .4s;
+}
+h1.hero-h1 .ac { color: var(--accent); font-weight: 300; transition: color .4s; }
+
+.hero-tagline {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: clamp(.82rem, 1.5vw, 1.18rem);
+  letter-spacing: .28em; text-transform: uppercase;
+  color: var(--fg-dim); margin-top: 16px;
+  hyphens: none;
+  opacity: 0; animation: fadeUp .8s .6s forwards;
+  transition: color .4s;
+}
+.hero-tagline .sep { margin: 0 12px; color: var(--accent-dim); }
+
+.hero-desc {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: 1.02rem; line-height: 1.78;
+  color: var(--fg-dim); max-width: 480px; margin-top: 26px;
+  hyphens: none;
+  opacity: 0; animation: fadeUp .8s .78s forwards;
+  transition: color .4s;
+}
+.hero-btns {
+  display: flex; gap: 12px; margin-top: 36px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp .8s .95s forwards;
+}
+
+/* scroll hint bottom-left */
+.hero-scroll-hint {
+  position: absolute; bottom: 28px; left: 44px; z-index: 3;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.48rem;
+  color: var(--fg-faint); letter-spacing: .22em;
+  display: flex; align-items: center; gap: 9px;
+  transition: color .4s;
+}
+.scroll-bar { width: 34px; height: 1px; background: var(--line-bright); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ══════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════ */
+.btn {
+  cursor: none;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 400;
+  font-size: 0.74rem; letter-spacing: .22em; text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--line-bright); color: var(--fg);
+  padding: 13px 26px;
+  display: inline-flex; align-items: center; gap: 9px;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-faint); }
+.btn.solid { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.solid:hover { background: transparent; color: var(--accent); }
+.btn .arr { transition: transform .2s; }
+.btn:hover .arr { transform: translateX(4px); }
+
+/* ══════════════════════════════════════════
+   SPACING SYSTEM — balanced, no excess negative space
+══════════════════════════════════════════ */
+:root {
+  --sp-v: 80px;   /* section vertical padding — tighter, more balanced */
+  --sp-h: 48px;   /* section horizontal padding — consistent gutter */
+}
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY HELPERS
+══════════════════════════════════════════ */
+.lbl {
+  font-family: 'Share Tech Mono', monospace; font-size: 0.56rem;
+  color: var(--accent); letter-spacing: .28em; text-transform: uppercase;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 10px;
+  transition: color .4s;
+}
+.lbl::before { content: ''; width: 14px; height: 1px; background: var(--accent); }
+.heading {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: clamp(2.4rem, 5vw, 5rem);
+  text-transform: uppercase; letter-spacing: .04em; line-height: .94;
+  color: var(--fg); hyphens: none; transition: color .4s;
+}
+.heading strong { font-weight: 600; color: var(--accent); transition: color .4s; }
+.body-copy {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .95rem; line-height: 1.80; color: var(--fg-dim);
+  hyphens: none; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   MISSION BAND — equal thirds, balanced
+══════════════════════════════════════════ */
+#mission {
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  background: var(--bg-panel);
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  transition: background .5s, border-color .4s;
+}
+.mc {
+  padding: var(--sp-v) var(--sp-h);
+  border-right: 1px solid var(--line);
+  transition: border-color .4s;
+}
+.mc:last-child { border-right: none; }
+.mc-idx {
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--fg-faint); letter-spacing: .2em; margin-bottom: 22px;
+  transition: color .4s;
+}
+.mc-lbl {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+  font-size: .66rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 14px; transition: color .4s;
+}
+.mc-text {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .92rem; line-height: 1.80; color: var(--fg-dim);
+  hyphens: none; transition: color .4s;
+}
+.mc-text em { font-style: italic; color: var(--fg); }
+.mc-big {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: 3.6rem; line-height: 1; color: var(--fg);
+  margin-bottom: 8px; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   PHOTO STRIP
+══════════════════════════════════════════ */
+.photo-band {
+  display: grid; grid-template-columns: 2fr 1fr 1fr;
+  height: 400px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  transition: border-color .4s;
+}
+.ph-cell {
+  position: relative; overflow: hidden;
+  border-right: 1px solid var(--line);
+  transition: border-color .4s;
+}
+.ph-cell:last-child { border-right: none; }
+.ph-cell img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  filter: saturate(.45) brightness(.55) contrast(1.1);
+  transition: transform .8s ease, filter .5s;
+}
+[data-theme="light"] .ph-cell img { filter: saturate(.4) brightness(.65) sepia(.15) contrast(1.05); }
+.ph-cell:hover img { transform: scale(1.05); filter: saturate(.75) brightness(.72); }
+[data-theme="light"] .ph-cell:hover img { filter: saturate(.6) brightness(.78) sepia(.08); }
+.ph-lbl {
+  position: absolute; bottom: 16px; left: 16px;
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: rgba(255,255,255,.75); letter-spacing: .18em; text-transform: uppercase;
+  background: rgba(0,0,0,.55); padding: 4px 10px; backdrop-filter: blur(6px);
+}
+
+/* ══════════════════════════════════════════
+   PROLOGUE
+══════════════════════════════════════════ */
+#prologue {
+  padding: var(--sp-v) var(--sp-h);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 72px; align-items: center;
+  transition: background .5s, border-color .4s;
+}
+.pro-quote {
+  font-family: 'Barlow Condensed', sans-serif; font-style: italic; font-weight: 200;
+  font-size: clamp(1.55rem, 3vw, 2.8rem);
+  line-height: 1.25; color: var(--fg);
+  border-left: 2px solid var(--accent); padding-left: 30px;
+  hyphens: none; transition: color .4s, border-color .4s;
+}
+.pro-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 32px;
+}
+.pstat {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 26px 24px;
+  transition: background .5s, border-color .4s;
+}
+.pstat-val {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: 2.3rem; line-height: 1; color: var(--fg);
+  margin-bottom: 6px; transition: color .4s;
+}
+.pstat-lbl {
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--fg-faint); letter-spacing: .14em; text-transform: uppercase;
+  transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   VERTICALS TABLE
+══════════════════════════════════════════ */
+#verticals { padding-top: var(--sp-v); }
+.vert-hdr {
+  padding: 0 var(--sp-h) 48px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+.vert-note {
+  font-family: 'Share Tech Mono', monospace; font-size: .52rem;
+  color: var(--fg-faint); letter-spacing: .12em;
+  text-align: right; line-height: 2; transition: color .4s;
+}
+.vert-table { border-top: 1px solid var(--line); transition: border-color .4s; overflow: hidden; }
+.vrow {
+  display: grid; grid-template-columns: 56px 200px 1fr 148px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none; color: inherit;
+  transition: background .25s, border-color .4s;
+  min-width: 0;
+}
+.vrow:hover { background: var(--bg-card); }
+.vrow:hover .varr { transform: translateX(7px); color: var(--accent); }
+.vcell {
+  padding: 28px var(--sp-h);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; justify-content: center;
+  min-width: 0; overflow: hidden;
+  transition: border-color .4s;
+}
+.vcell:last-child { border-right: none; }
+.vnum {
+  font-family: 'Share Tech Mono', monospace; font-size: .52rem;
+  color: var(--fg-faint); letter-spacing: .2em;
+  align-self: center; text-align: center; padding: 28px 0;
+  transition: color .4s;
+}
+.vname {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: clamp(1.4rem, 2vw, 2.2rem);
+  text-transform: uppercase; letter-spacing: .08em; line-height: 1;
+  color: var(--fg); hyphens: none; overflow-wrap: break-word;
+  transition: color .4s;
+}
+.vname span { font-weight: 600; color: var(--accent); transition: color .4s; }
+.vrole {
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--accent); letter-spacing: .13em; text-transform: uppercase;
+  margin-top: 7px; transition: color .4s; overflow-wrap: break-word;
+}
+.vdesc {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .84rem; line-height: 1.76; color: var(--fg-dim);
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+.vtags { display: flex; flex-direction: column; gap: 5px; }
+.vtag {
+  font-family: 'Share Tech Mono', monospace; font-size: .46rem;
+  color: var(--fg-faint); letter-spacing: .12em; text-transform: uppercase;
+  border: 1px solid var(--line); padding: 4px 9px; display: inline-block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: all .4s;
+}
+.varr {
+  font-family: 'Share Tech Mono', monospace; font-size: .52rem;
+  color: var(--fg-faint); letter-spacing: .2em;
+  transition: transform .22s, color .22s; margin-top: 13px;
+}
+
+/* ══════════════════════════════════════════
+   TELEMETRY BAND
+══════════════════════════════════════════ */
+#telem {
+  background: var(--bg-panel);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(4,1fr);
+  transition: background .5s, border-color .4s;
+}
+.tcell {
+  padding: 42px var(--sp-h);
+  border-right: 1px solid var(--line);
+  position: relative; overflow: hidden;
+  transition: border-color .4s;
+}
+.tcell:last-child { border-right: none; }
+.tcell::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right,transparent,var(--accent-dim),transparent);
+  opacity: 0; transition: opacity .3s;
+}
+.tcell:hover::after { opacity: 1; }
+.tlbl {
+  font-family: 'Share Tech Mono', monospace; font-size: .52rem;
+  color: var(--accent); letter-spacing: .22em; text-transform: uppercase;
+  margin-bottom: 12px; transition: color .4s;
+}
+.tval {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: 2.7rem; line-height: 1; color: var(--fg);
+  margin-bottom: 7px; transition: color .4s;
+}
+.tunit {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .12em; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   ECOSYSTEM DIAGRAM
+══════════════════════════════════════════ */
+#diagram {
+  padding: var(--sp-v) var(--sp-h);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  transition: background .5s, border-color .4s;
+}
+.diag-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center; margin-top: 52px;
+}
+.diag-svg-wrap { display: flex; justify-content: center; align-items: center; }
+.diag-svg-wrap svg { width: 100%; max-width: 420px; height: auto; }
+.diag-items { display: flex; flex-direction: column; gap: 2px; }
+.ditem {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 20px 24px;
+  display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start;
+  transition: border-color .3s, background .5s;
+}
+.ditem:hover { border-color: var(--line-bright); }
+.dnum {
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--accent); letter-spacing: .18em; margin-top: 3px; transition: color .4s;
+}
+.dtitle {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: 1.05rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg); transition: color .4s;
+}
+.dsub {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .11em; margin-top: 3px; transition: color .4s;
+}
+.dtext {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .8rem; line-height: 1.78; color: var(--fg-dim);
+  margin-top: 6px; hyphens: none; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   AGENCIES
+══════════════════════════════════════════ */
+#partners {
+  padding: 72px var(--sp-h);
+  border-bottom: 1px solid var(--line);
+  transition: border-color .4s;
+}
+.partners-lbl {
+  font-family: 'Share Tech Mono', monospace; font-size: .54rem;
+  color: var(--fg-faint); letter-spacing: .26em; text-transform: uppercase;
+  text-align: center; margin-bottom: 48px; transition: color .4s;
+}
+.agencies-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 52px; flex-wrap: wrap;
+}
+.agency {
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  opacity: .36; filter: grayscale(1);
+  transition: opacity .3s, filter .3s;
+}
+.agency:hover { opacity: 1; filter: grayscale(0); }
+.ag-svg { height: 36px; width: auto; display: block; }
+.ag-name {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .22em; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   MARKET
+══════════════════════════════════════════ */
+#market { padding: var(--sp-v) var(--sp-h); }
+.market-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; margin-top: 48px;
+}
+.mcard {
+  background: var(--bg-panel); border: 1px solid var(--line);
+  padding: 44px var(--sp-h); position: relative; overflow: hidden;
+  transition: border-color .3s, background .5s;
+}
+.mcard:hover { border-color: var(--line-mid); }
+.mcard::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right,transparent,var(--accent-dim),transparent);
+  opacity: 0; transition: opacity .4s;
+}
+.mcard:hover::before { opacity: 1; }
+.mcard.wide { grid-column: 1 / -1; }
+.mcard-num {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .18em; margin-bottom: 24px; transition: color .4s;
+}
+.mcard-title {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: 1.75rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg); margin-bottom: 12px; line-height: 1.1;
+  hyphens: none; transition: color .4s;
+}
+.mbody {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .88rem; line-height: 1.80; color: var(--fg-dim);
+  margin-bottom: 24px; hyphens: none; transition: color .4s;
+}
+.mstatus {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Share Tech Mono', monospace; font-size: .52rem;
+  color: var(--accent3); letter-spacing: .16em; transition: color .4s;
+}
+.sdot {
+  width: 5px; height: 5px; background: var(--accent3);
+  border-radius: 50%; animation: blink 2s infinite; transition: background .4s;
+}
+
+/* ══════════════════════════════════════════
+   INVEST
+══════════════════════════════════════════ */
+#invest {
+  padding: var(--sp-v) var(--sp-h);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 72px; align-items: start;
+  transition: background .5s, border-color .4s;
+}
+.invest-statement {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: clamp(1.5rem, 2.8vw, 2.5rem);
+  line-height: 1.22; color: var(--fg);
+  margin-top: 20px; hyphens: none; transition: color .4s;
+}
+.invest-statement em { color: var(--accent); font-style: italic; }
+.invest-body {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .93rem; line-height: 1.80; color: var(--fg-dim);
+  margin-top: 18px; hyphens: none; transition: color .4s;
+}
+.invest-metrics {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 0;
+}
+.imetric {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 26px 24px;
+  transition: background .5s, border-color .4s;
+}
+.imetric-val {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: 2.1rem; line-height: 1; color: var(--fg);
+  margin-bottom: 5px; transition: color .4s;
+}
+.imetric-lbl {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .13em; text-transform: uppercase; transition: color .4s;
+}
+.invest-rows { margin-top: 2px; display: flex; flex-direction: column; gap: 2px; }
+.irow {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 18px 22px;
+  display: grid; grid-template-columns: 30px 1fr; gap: 14px; align-items: start;
+  transition: border-color .3s, background .5s;
+}
+.irow:hover { border-color: var(--line-bright); }
+.irow-num {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--accent); letter-spacing: .17em; margin-top: 2px; transition: color .4s;
+}
+.irow-title {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: .98rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg); transition: color .4s;
+}
+.irow-sub {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .78rem; line-height: 1.75; color: var(--fg-dim);
+  margin-top: 3px; hyphens: none; transition: color .4s;
+}
+
+#values { padding: var(--sp-v) var(--sp-h); }
+.val-grid {
+  display: grid; grid-template-columns: repeat(5,1fr);
+  gap: 2px; margin-top: 48px;
+}
+.vitem {
+  background: var(--bg-panel); border: 1px solid var(--line);
+  padding: 32px 24px; position: relative; overflow: hidden;
+  min-width: 0;
+  transition: background .5s, border-color .4s;
+}
+.vitem::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: var(--accent); opacity: 0;
+  transition: opacity .3s, background .4s;
+}
+.vitem:hover::before { opacity: 1; }
+.vcode {
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--accent); letter-spacing: .22em; margin-bottom: 16px; transition: color .4s;
+}
+.vtitle-v {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: 1.08rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--fg); margin-bottom: 10px; line-height: 1.15;
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+.vbody {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .78rem; line-height: 1.76; color: var(--fg-dim);
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   CASE STUDY SECTION
+══════════════════════════════════════════ */
+#case-study {
+  padding: var(--sp-v) var(--sp-h);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  transition: border-color .4s;
+}
+.cs-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; margin-top: 48px;
+}
+.cs-card {
+  background: var(--bg-panel); border: 1px solid var(--line);
+  padding: 40px var(--sp-h); overflow: hidden; min-width: 0;
+  position: relative;
+  transition: border-color .3s, background .5s;
+}
+.cs-card:hover { border-color: var(--line-mid); }
+.cs-card.highlight {
+  grid-column: 1 / -1;
+  background: var(--bg-card);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+}
+.cs-tag {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--accent); letter-spacing: .24em; text-transform: uppercase;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  transition: color .4s;
+}
+.cs-tag::before { content: ''; width: 12px; height: 1px; background: var(--accent); }
+.cs-title {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: clamp(1.3rem, 2vw, 1.8rem); text-transform: uppercase; letter-spacing: .06em;
+  color: var(--fg); margin-bottom: 14px; line-height: 1.1;
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+.cs-body {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .86rem; line-height: 1.80; color: var(--fg-dim);
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+.cs-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 24px;
+}
+.cs-stat {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 18px 20px;
+  transition: background .5s, border-color .4s;
+}
+.cs-stat-val {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: 1.8rem; line-height: 1; color: var(--accent);
+  margin-bottom: 4px; transition: color .4s;
+}
+.cs-stat-lbl {
+  font-family: 'Share Tech Mono', monospace; font-size: .46rem;
+  color: var(--fg-faint); letter-spacing: .12em; text-transform: uppercase;
+  transition: color .4s;
+}
+.cs-source {
+  font-family: 'Share Tech Mono', monospace; font-size: .44rem;
+  color: var(--fg-faint); letter-spacing: .12em;
+  margin-top: 16px; transition: color .4s;
+}
+
+/* ══════════════════════════════════════════
+   EXTREME ENVIRONMENTS — knowledge section
+══════════════════════════════════════════ */
+#extreme {
+  padding: var(--sp-v) var(--sp-h);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+  transition: background .5s, border-color .4s;
+}
+.ext-intro {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: start; margin-top: 48px; margin-bottom: 48px;
+}
+.ext-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.ext-card {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 32px 28px; overflow: hidden; min-width: 0;
+  transition: border-color .3s, background .5s;
+}
+.ext-card:hover { border-color: var(--line-bright); }
+.ext-icon {
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--accent); letter-spacing: .2em; margin-bottom: 20px;
+  transition: color .4s;
+}
+.ext-env {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: 1.3rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg); margin-bottom: 8px; line-height: 1.1;
+  hyphens: none; transition: color .4s;
+}
+.ext-sub {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--accent); letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: 14px; transition: color .4s;
+}
+.ext-body {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .82rem; line-height: 1.78; color: var(--fg-dim);
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+.ext-pill {
+  display: inline-block; margin-top: 14px;
+  font-family: 'Share Tech Mono', monospace; font-size: .44rem;
+  color: var(--accent3); letter-spacing: .14em; text-transform: uppercase;
+  border: 1px solid var(--accent3); padding: 3px 8px; opacity: .8;
+  transition: color .4s, border-color .4s;
+}
+.restricted-band {
+  margin-top: 2px;
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 36px var(--sp-h);
+  display: grid; grid-template-columns: 1fr 2fr;
+  gap: 48px; align-items: center;
+  transition: background .5s, border-color .4s;
+}
+.restricted-label {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem); text-transform: uppercase; letter-spacing: .06em;
+  line-height: 1.1; color: var(--fg); hyphens: none; transition: color .4s;
+}
+.restricted-label em { color: var(--accent2); font-style: italic; }
+.restricted-body {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .88rem; line-height: 1.80; color: var(--fg-dim);
+  hyphens: none; overflow-wrap: break-word; transition: color .4s;
+}
+.keyword {
+  color: var(--accent); font-family: 'Share Tech Mono', monospace;
+  font-size: .82em; letter-spacing: .06em;
+}
+#mission-log {
+  padding: var(--sp-v) var(--sp-h);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  transition: background .5s, border-color .4s;
+}
+.ml-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; }
+.ml-progress-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.ml-progress-label {
+  font-family: 'Share Tech Mono', monospace; font-size: .52rem;
+  color: var(--fg-faint); letter-spacing: .2em; transition: color .4s;
+}
+.ml-bar-track {
+  width: 220px; height: 3px;
+  background: var(--line); border-radius: 2px;
+  transition: background .4s;
+}
+.ml-bar-fill {
+  height: 100%; width: 0%; background: var(--accent);
+  border-radius: 2px; transition: width .6s ease, background .4s;
+}
+.ml-pct {
+  font-family: 'Share Tech Mono', monospace; font-size: .68rem;
+  color: var(--accent); letter-spacing: .14em; transition: color .4s;
+}
+.ml-grid {
+  display: grid; grid-template-columns: repeat(6,1fr); gap: 2px;
+}
+.ml-node {
+  background: var(--bg-card); border: 1px solid var(--line);
+  padding: 24px 20px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  position: relative; overflow: hidden;
+  transition: background .5s, border-color .4s;
+  cursor: default;
+}
+.ml-node.unlocked { border-color: var(--accent-dim); }
+.ml-node.completed { border-color: var(--accent); background: var(--accent-faint); }
+.ml-node.completed .ml-node-check { opacity: 1; }
+.ml-node-idx {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .2em; transition: color .4s;
+}
+.ml-node.unlocked .ml-node-idx,
+.ml-node.completed .ml-node-idx { color: var(--accent); }
+.ml-node-name {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: .94rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--fg-dim); line-height: 1.1; transition: color .4s;
+}
+.ml-node.unlocked .ml-node-name,
+.ml-node.completed .ml-node-name { color: var(--fg); }
+.ml-node-check {
+  position: absolute; top: 12px; right: 12px;
+  font-family: 'Share Tech Mono', monospace; font-size: .5rem;
+  color: var(--accent); letter-spacing: .1em; opacity: 0;
+  transition: opacity .4s, color .4s;
+}
+.ml-cta {
+  margin-top: 40px; text-align: center;
+}
+.ml-cta-msg {
+  font-family: 'Share Tech Mono', monospace; font-size: .58rem;
+  color: var(--fg-faint); letter-spacing: .2em; text-transform: uppercase;
+  margin-bottom: 20px; transition: color .4s;
+}
+.ml-cta-msg.complete { color: var(--accent3); }
+
+/* ══════════════════════════════════════════
+   CTA
+══════════════════════════════════════════ */
+#cta {
+  padding: var(--sp-v) var(--sp-h);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: 72px;
+  position: relative; overflow: hidden;
+  transition: background .5s, border-color .4s;
+}
+#cta::before {
+  content: ''; position: absolute; top: -260px; right: -260px;
+  width: 680px; height: 680px; border-radius: 50%;
+  background: radial-gradient(circle,var(--accent-faint) 0%,transparent 65%);
+  pointer-events: none;
+}
+.cta-eye {
+  font-family: 'Share Tech Mono', monospace; font-size: .54rem;
+  color: var(--accent); letter-spacing: .28em; text-transform: uppercase;
+  margin-bottom: 18px; display: flex; align-items: center; gap: 10px; transition: color .4s;
+}
+.cta-eye::before { content: ''; width: 14px; height: 1px; background: var(--accent); }
+.cta-h2 {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 200;
+  font-size: clamp(2.5rem, 4.8vw, 5.2rem);
+  text-transform: uppercase; letter-spacing: .04em;
+  line-height: .9; color: var(--fg); margin-bottom: 24px;
+  hyphens: none; transition: color .4s;
+}
+.cta-h2 strong { font-weight: 600; color: var(--accent); transition: color .4s; }
+.cta-sub {
+  font-family: 'Barlow', sans-serif; font-weight: 300;
+  font-size: .95rem; line-height: 1.80; color: var(--fg-dim);
+  max-width: 380px; hyphens: none; transition: color .4s;
+}
+.cta-cards { display: flex; flex-direction: column; gap: 2px; }
+.cta-card {
+  cursor: none; background: var(--bg-card); border: 1px solid var(--line);
+  padding: 24px 28px; text-decoration: none;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: border-color .22s, background .22s;
+}
+.cta-card:hover { border-color: var(--accent); background: var(--accent-faint); }
+.cta-card-lbl {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: 1.02rem; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--fg); transition: color .4s;
+}
+.cta-card-sub {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .12em; margin-top: 3px; transition: color .4s;
+}
+.cta-arr {
+  font-family: 'Share Tech Mono', monospace; font-size: .64rem;
+  color: var(--accent); flex-shrink: 0;
+  transition: transform .22s, color .4s;
+}
+.cta-card:hover .cta-arr { transform: translateX(5px); }
+.closing-quote {
+  grid-column: 1 / -1;
+  margin-top: 56px; border-top: 1px solid var(--line); padding-top: 44px;
+  font-family: 'Barlow Condensed', sans-serif; font-style: italic; font-weight: 200;
+  font-size: clamp(1.15rem, 2.1vw, 1.85rem);
+  line-height: 1.38; color: var(--fg-dim); text-align: center;
+  hyphens: none; transition: color .4s, border-color .4s;
+}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--line);
+  background: var(--bg-panel);
+  display: grid; grid-template-columns: 160px 1fr auto;
+  align-items: center; height: 54px;
+  transition: background .5s, border-color .4s;
+}
+.f-logo {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: .98rem; letter-spacing: .3em;
+  color: var(--fg-faint); padding: 0 32px;
+  border-right: 1px solid var(--line); height: 100%;
+  display: flex; align-items: center; transition: all .4s;
+}
+.f-copy {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .13em; padding: 0 32px; transition: color .4s;
+}
+.f-tag {
+  font-family: 'Share Tech Mono', monospace; font-size: .48rem;
+  color: var(--fg-faint); letter-spacing: .12em; padding: 0 32px;
+  border-left: 1px solid var(--line); height: 100%;
+  display: flex; align-items: center; transition: all .4s;
+}
+
+/* ══════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════ */
+.rv { opacity: 0; transform: translateY(18px); transition: opacity .72s ease, transform .72s ease; }
+.rv.in { opacity: 1; transform: translateY(0); }
+.d1{transition-delay:.08s} .d2{transition-delay:.18s}
+.d3{transition-delay:.28s} .d4{transition-delay:.40s}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:1100px){
+  :root { --sp-h: 24px; --sp-v: 64px; }
+  .nav-links { display: none; }
+  #mission, #prologue, #invest, #cta { grid-template-columns: 1fr; gap: 0; }
+  #mission { gap: 0; }
+  .mc { border-right: none; border-bottom: 1px solid var(--line); }
+  .mc:last-child { border-bottom: none; }
+  .vrow { grid-template-columns: 44px 1fr; }
+  .vrow .vcell:nth-child(3), .vrow .vcell:nth-child(4) { display: none; }
+  #telem { grid-template-columns: 1fr 1fr; }
+  .photo-band { grid-template-columns: 1fr; height: auto; }
+  .ph-cell { height: 180px; }
+  .diag-grid { grid-template-columns: 1fr; }
+  .market-grid, .cs-grid { grid-template-columns: 1fr; }
+  .cs-card.highlight { grid-template-columns: 1fr; gap: 28px; }
+  .ext-grid { grid-template-columns: 1fr; }
+  .restricted-band { grid-template-columns: 1fr; gap: 24px; }
+  .ext-intro { grid-template-columns: 1fr; gap: 28px; }
+  .mcard.wide { grid-column: auto; }
+  .val-grid { grid-template-columns: 1fr 1fr; }
+  .ml-grid { grid-template-columns: repeat(3,1fr); }
+  .invest-metrics { grid-template-columns: 1fr 1fr; }
+  #cta { grid-template-columns: 1fr; }
+  .closing-quote { margin-top: 36px; }
+  footer { grid-template-columns: 1fr; height: auto; padding: 18px var(--sp-h); gap: 6px; }
+  .f-logo, .f-tag { border: none; height: auto; padding: 0; }
+  .agencies-row { gap: 28px; }
+  .hero-body { padding: 0 var(--sp-h) 72px; }
+  .hero-scroll-hint { left: var(--sp-h); }
+}
+@media(max-width:640px){
+  .val-grid { grid-template-columns: 1fr; }
+  .ml-grid { grid-template-columns: repeat(2,1fr); }
+  h1.hero-h1 { font-size: clamp(3.8rem,14vw,6rem); }
+  .pro-stats { grid-template-columns: 1fr; }
+  .invest-metrics { grid-template-columns: 1fr; }
+  .cs-stats { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── ROCKET CURSOR — single element, no trail/shadow ── -->
+<div id="cursor-rocket">
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- rocket body -->
+    <path d="M16 2 C16 2 22 8 22 17 L16 22 L10 17 C10 8 16 2 16 2Z" fill="var(--accent)" opacity=".9"/>
+    <!-- nose cone -->
+    <path d="M16 2 C13 5 10 10 10 17 L16 22 L22 17 C22 10 19 5 16 2Z" fill="var(--accent)"/>
+    <!-- window -->
+    <circle cx="16" cy="13" r="2.5" fill="var(--bg)" stroke="var(--accent)" stroke-width=".8" opacity=".8"/>
+    <!-- fins -->
+    <path d="M10 17 L6 22 L10 20Z" fill="var(--accent)" opacity=".7"/>
+    <path d="M22 17 L26 22 L22 20Z" fill="var(--accent)" opacity=".7"/>
+    <!-- exhaust -->
+    <path d="M13 22 Q16 28 19 22" stroke="var(--accent2)" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".8">
+      <animate attributeName="d" values="M13 22 Q16 28 19 22;M13 22 Q16 26 19 22;M13 22 Q16 30 19 22" dur="0.5s" repeatCount="indefinite"/>
+    </path>
+  </svg>
+</div>
+<!-- ── STARFIELD ── -->
+<canvas id="starfield"></canvas>
+
+<!-- ── HUD CORNERS ── -->
+<div id="hud">
+  <div class="hc tl"></div><div class="hc tr"></div>
+  <div class="hc bl"></div><div class="hc br"></div>
+</div>
+
+<!-- ════════════════ NAV ════════════════ -->
+<nav>
+  <a href="#" class="nav-logo-wrap">
+    <div class="nav-dot"></div>
+    <span class="nav-wordmark">ETHRA</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#verticals">Verticals</a></li>
+    <li><a href="#diagram">Ecosystem</a></li>
+    <li><a href="#invest">Invest</a></li>
+  </ul>
+
+  <div class="nav-actions">
+    <a href="#cta" class="nav-cta">Contact <span style="margin-left:4px">→</span></a>
+    <button class="nav-theme" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span class="nav-theme-icon" id="ticon">☀️</span>
+      <span class="nav-theme-txt" id="ttxt">SUN</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Orbital diagram -->
+  <svg class="hero-orbital" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="300" cy="300" r="290" stroke="currentColor" stroke-width=".5" stroke-dasharray="4 9" opacity=".6"/>
+    <circle cx="300" cy="300" r="224" stroke="currentColor" stroke-width=".4" stroke-dasharray="2 13" opacity=".5"/>
+    <circle cx="300" cy="300" r="160" stroke="currentColor" stroke-width=".65" opacity=".72"/>
+    <circle cx="300" cy="300" r="96"  stroke="currentColor" stroke-width=".35" stroke-dasharray="1 8" opacity=".5"/>
+    <circle cx="300" cy="300" r="44"  stroke="currentColor" stroke-width=".5" opacity=".65"/>
+    <circle cx="300" cy="300" r="14"  fill="currentColor" opacity=".13"/>
+    <line x1="0" y1="300" x2="600" y2="300" stroke="currentColor" stroke-width=".26" opacity=".3"/>
+    <line x1="300" y1="0" x2="300" y2="600" stroke="currentColor" stroke-width=".26" opacity=".3"/>
+    <line x1="88" y1="88" x2="512" y2="512" stroke="currentColor" stroke-width=".18" opacity=".2"/>
+    <line x1="512" y1="88" x2="88" y2="512" stroke="currentColor" stroke-width=".18" opacity=".2"/>
+    <circle cx="590" cy="300" r="5" fill="currentColor" opacity=".9"/>
+    <circle cx="300" cy="10"  r="4" fill="orange" opacity=".95"/>
+    <circle cx="88"  cy="88"  r="2.5" fill="currentColor" opacity=".55"/>
+  </svg>
+
+  <!-- Live telemetry strip -->
+  <div class="hero-telem">
+    <div class="ht-row">SYS STATUS &nbsp;NOMINAL</div>
+    <div class="ht-row">DESIGN MODE &nbsp;ACTIVE</div>
+    <div class="ht-row">ENV &nbsp;EARTH + ORBIT</div>
+    <div class="ht-row" id="live-clock">UTC 00:00:00</div>
+  </div>
+
+  <!-- Main text block -->
+  <div class="hero-body">
+    <div class="hero-eyebrow">ETHRA 01 &nbsp;&nbsp; Discovery Brief &nbsp;&nbsp; Mission Active</div>
+    <h1 class="hero-h1">
+      Human<br>
+      <span class="ac">Habitat</span><br>
+      Design
+    </h1>
+    <div class="hero-tagline">
+      Terrestrial<span class="sep">·</span>Extreme<span class="sep">·</span>Extraterrestrial
+    </div>
+    <p class="hero-desc">
+      ETHRA operates at the intersection of luxury interior architecture, extreme environment engineering, and space habitat research. Designing the spaces humans inhabit now, and the ones they will inhabit next.
+    </p>
+    <div class="hero-btns">
+      <a href="#verticals" class="btn solid">Explore Verticals <span class="arr">→</span></a>
+      <a href="#mission"   class="btn">Our Mission <span class="arr">→</span></a>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-bar"></div>SCROLL TO DISCOVER
+  </div>
+</section>
+
+<!-- ════════════════ MISSION ════════════════ -->
+<section id="mission">
+  <div class="mc rv">
+    <div class="mc-idx">MISSION PARAMETERS</div>
+    <div class="mc-lbl">Core Directive</div>
+    <p class="mc-text">To redefine how humans inhabit space by integrating <em>design, technology, culture, and sustainability</em> across both terrestrial and extraterrestrial environments.</p>
+  </div>
+  <div class="mc rv d1">
+    <div class="mc-idx">VISION STATEMENT</div>
+    <div class="mc-lbl">Long Range Target</div>
+    <p class="mc-text">To become the global leader in human centric habitat design. Setting the benchmark for how people <em>live, experience, and interact</em> with built environments on Earth and in future space ecosystems.</p>
+  </div>
+  <div class="mc rv d2">
+    <div class="mc-idx">OPERATIONAL STATUS · PHASE 01</div>
+    <div class="mc-lbl">Break Even Target</div>
+    <div class="mc-big">Y2 / Y3</div>
+    <p class="mc-text" style="font-size:.82rem">Monthly burn €20K to €35K. Revenue diversified across services, R&D, education, and digital products. Three revenue lines compounding from day one.</p>
+  </div>
+</section>
+
+<!-- ════════════════ PHOTO STRIP ════════════════ -->
+<div class="photo-band">
+  <div class="ph-cell">
+    <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&q=75" alt="Earth from orbit" loading="lazy">
+    <div class="ph-lbl">ISS · Low Earth Orbit · 408 km</div>
+  </div>
+  <div class="ph-cell">
+    <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=600&q=75" alt="Lunar surface" loading="lazy">
+    <div class="ph-lbl">Lunar Surface · Analog</div>
+  </div>
+  <div class="ph-cell">
+    <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=600&q=75" alt="Deep space nebula" loading="lazy">
+    <div class="ph-lbl">Deep Field · Hubble · NASA / ESA</div>
+  </div>
+</div>
+
+<!-- ════════════════ PROLOGUE ════════════════ -->
+<section id="prologue">
+  <div class="rv">
+    <blockquote class="pro-quote">
+      A room is a climate. A building, a biography. A habitat, the quiet condition under which life flourishes.
+    </blockquote>
+  </div>
+  <div class="rv d1">
+    <div class="lbl">A design house for life on Earth and beyond</div>
+    <p class="body-copy" style="margin-top:14px">ETHRA is a luxury interior studio, a space habitat lab, and a design institute. Three studios. One cultural posture. Each earns its own keep. Together they share research, reputation, and capital, compounding faster than any vertical could alone.</p>
+    <div class="pro-stats">
+      <div class="pstat"><div class="pstat-val">03</div><div class="pstat-lbl">Studios under one roof</div></div>
+      <div class="pstat"><div class="pstat-val">02</div><div class="pstat-lbl">Worlds · Earth and orbital</div></div>
+      <div class="pstat"><div class="pstat-val">∞</div><div class="pstat-lbl">Cultural reference layers</div></div>
+      <div class="pstat"><div class="pstat-val">Y2/Y3</div><div class="pstat-lbl">Projected break even</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ VERTICALS ════════════════ -->
+<section id="verticals">
+  <div class="vert-hdr">
+    <div>
+      <div class="lbl rv">02 · Verticals</div>
+      <div class="heading rv d1">Three <strong>Systems</strong></div>
+    </div>
+    <div class="vert-note rv">ETHRA.STUDIO · ETHRA.LAB · ETHRA.INSTITUTE<br>Three verticals. One integrated platform.</div>
+  </div>
+  <div class="vert-table">
+    <a href="#" class="vrow rv">
+      <div class="vnum">01</div>
+      <div class="vcell">
+        <div class="vname">ETHRA <span>Studio</span></div>
+        <div class="vrole">Luxury Interior Architecture · Primary Revenue</div>
+      </div>
+      <div class="vcell">
+        <p class="vdesc">Interiors composed as inhabited artworks. Bespoke environments for high net worth residences, hospitality, and cultural venues. Each commission is a singular cultural statement anchored in research and craft. Where atmosphere becomes architecture.</p>
+      </div>
+      <div class="vcell">
+        <div class="vtags">
+          <span class="vtag">HNW Residences</span>
+          <span class="vtag">Hospitality</span>
+          <span class="vtag">Cultural Venues</span>
+        </div>
+        <div class="varr">EXPLORE →</div>
+      </div>
+    </a>
+    <a href="#" class="vrow rv d1">
+      <div class="vnum">02</div>
+      <div class="vcell">
+        <div class="vname">ETHRA <span>Habitat Lab</span></div>
+        <div class="vrole">Extreme and Space Habitat R&amp;D · IP Development</div>
+      </div>
+      <div class="vcell">
+        <p class="vdesc">Human centric systems for orbital and extreme environments. Concept design, prototyping, and habitability frameworks for conditions that do not yet exist at scale. Partnering with agencies and aerospace companies to build the interior science of spaceflight.</p>
+      </div>
+      <div class="vcell">
+        <div class="vtags">
+          <span class="vtag">Space Agencies</span>
+          <span class="vtag">Aerospace</span>
+          <span class="vtag">Research Inst.</span>
+        </div>
+        <div class="varr">EXPLORE →</div>
+      </div>
+    </a>
+    <a href="#" class="vrow rv d2">
+      <div class="vnum">03</div>
+      <div class="vcell">
+        <div class="vname">ETHRA <span>Institute</span></div>
+        <div class="vrole">Education and Thought Leadership · Scalable IP</div>
+      </div>
+      <div class="vcell">
+        <p class="vdesc">A platform for designers, researchers, and institutions. Programmes, workshops, and publications that scale ETHRA's philosophy globally. Knowledge published as practice. Building the next generation of habitat designers who work across Earth and space alike.</p>
+      </div>
+      <div class="vcell">
+        <div class="vtags">
+          <span class="vtag">Designers</span>
+          <span class="vtag">Researchers</span>
+          <span class="vtag">Universities</span>
+        </div>
+        <div class="varr">EXPLORE →</div>
+      </div>
+    </a>
+  </div>
+
+  <div id="telem">
+    <div class="tcell rv">
+      <div class="tlbl">Luxury Design Sector</div>
+      <div class="tval">$bn+</div>
+      <div class="tunit">GLOBAL MARKET · GROWING DEMAND</div>
+    </div>
+    <div class="tcell rv d1">
+      <div class="tlbl">Space Economy</div>
+      <div class="tval">↑∞</div>
+      <div class="tunit">EXPANDING · GOV + PRIVATE CAPITAL</div>
+    </div>
+    <div class="tcell rv d2">
+      <div class="tlbl">Revenue Streams</div>
+      <div class="tval">×3</div>
+      <div class="tunit">SERVICES · IP · EDUCATION</div>
+    </div>
+    <div class="tcell rv d3">
+      <div class="tlbl">Break Even Target</div>
+      <div class="tval">Y2/Y3</div>
+      <div class="tunit">PROJECTED · DIVERSIFIED CASHFLOW</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ DIAGRAM ════════════════ -->
+<section id="diagram">
+  <div class="lbl rv">03 · Ecosystem</div>
+  <div class="heading rv d1">Habitat <strong>Architecture</strong></div>
+  <p class="body-copy rv d2" style="max-width:520px;margin-top:14px">Three interdependent verticals form a single coherent ecosystem. Each generates value independently while reinforcing the whole, creating a compounding stack of services, products, and intellectual property.</p>
+  <div class="diag-grid">
+    <div class="diag-svg-wrap rv">
+      <svg viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="210" cy="210" r="188" stroke="var(--line-bright)" stroke-width=".7" stroke-dasharray="5 7"/>
+        <circle cx="210" cy="210" r="130" stroke="var(--line)" stroke-width=".6"/>
+        <circle cx="210" cy="210" r="68"  stroke="var(--accent-dim)" stroke-width=".9"/>
+        <circle cx="210" cy="210" r="28"  fill="var(--accent-faint)" stroke="var(--accent)" stroke-width=".9"/>
+        <text x="210" y="206" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="6" fill="var(--accent)" letter-spacing="1.5">ETHRA</text>
+        <text x="210" y="216" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--fg-faint)" letter-spacing="1">CORE</text>
+        <line x1="0" y1="210" x2="420" y2="210" stroke="var(--line)" stroke-width=".26"/>
+        <line x1="210" y1="0" x2="210" y2="420" stroke="var(--line)" stroke-width=".26"/>
+        <!-- Node Studio top -->
+        <circle cx="210" cy="46" r="25" fill="var(--bg-card)" stroke="var(--accent)" stroke-width=".9"/>
+        <text x="210" y="43" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5.5" fill="var(--accent)" letter-spacing=".8">STUDIO</text>
+        <text x="210" y="53" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4" fill="var(--fg-faint)" letter-spacing=".7">LUXURY</text>
+        <line x1="210" y1="71" x2="210" y2="142" stroke="var(--accent-dim)" stroke-width=".7" stroke-dasharray="3 4"/>
+        <!-- Node Lab right -->
+        <circle cx="347" cy="300" r="25" fill="var(--bg-card)" stroke="var(--accent)" stroke-width=".9"/>
+        <text x="347" y="297" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5.5" fill="var(--accent)" letter-spacing=".8">LAB</text>
+        <text x="347" y="307" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4" fill="var(--fg-faint)" letter-spacing=".5">SPACE R&amp;D</text>
+        <line x1="323" y1="281" x2="270" y2="255" stroke="var(--accent-dim)" stroke-width=".7" stroke-dasharray="3 4"/>
+        <!-- Node Institute left -->
+        <circle cx="73" cy="300" r="25" fill="var(--bg-card)" stroke="var(--accent)" stroke-width=".9"/>
+        <text x="73" y="297" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5" fill="var(--accent)" letter-spacing=".5">INST.</text>
+        <text x="73" y="307" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4" fill="var(--fg-faint)" letter-spacing=".5">EDUCATION</text>
+        <line x1="97" y1="281" x2="150" y2="255" stroke="var(--accent-dim)" stroke-width=".7" stroke-dasharray="3 4"/>
+        <!-- Labels -->
+        <text x="210" y="8"   text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--fg-faint)" letter-spacing="1">EARTH ENVIRONMENTS</text>
+        <text x="410" y="165" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--fg-faint)" letter-spacing="1" transform="rotate(90 410 165)">SPACE HABITATS</text>
+        <text x="10" y="165" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--fg-faint)" letter-spacing="1" transform="rotate(-90 10 165)">KNOWLEDGE</text>
+        <text x="210" y="416" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--fg-faint)" letter-spacing="1">SUSTAINABILITY</text>
+        <!-- Animated orbit dot -->
+        <circle r="3.8" fill="var(--accent)" opacity=".85">
+          <animateMotion dur="8s" repeatCount="indefinite"><mpath href="#op1"/></animateMotion>
+        </circle>
+        <circle r="2.8" fill="var(--accent2)" opacity=".75">
+          <animateMotion dur="13s" repeatCount="indefinite" begin="-5s"><mpath href="#op2"/></animateMotion>
+        </circle>
+        <path id="op1" d="M 210 22 A 188 188 0 1 1 209.99 22" fill="none"/>
+        <path id="op2" d="M 210 80 A 130 130 0 1 0 209.99 80" fill="none"/>
+      </svg>
+    </div>
+    <div class="rv d1">
+      <div class="lbl" style="margin-bottom:6px">System Architecture</div>
+      <p class="body-copy" style="font-size:.88rem;margin-bottom:26px">Each studio earns its own keep. Together they share research, reputation, and capital. The ecosystem compounds faster than any vertical could alone.</p>
+      <div class="diag-items">
+        <div class="ditem">
+          <div class="dnum">01</div>
+          <div><div class="dtitle">ETHRA Studio</div><div class="dsub">REVENUE ENGINE · BRAND ANCHOR · PORTFOLIO BUILDER</div><p class="dtext">High value commissions drive early cashflow, build the portfolio, and establish ETHRA's aesthetic authority in the luxury market.</p></div>
+        </div>
+        <div class="ditem">
+          <div class="dnum">02</div>
+          <div><div class="dtitle">ETHRA Habitat Lab</div><div class="dsub">IP DEVELOPMENT · INSTITUTIONAL PARTNERSHIPS · R&D</div><p class="dtext">Research contracts and prototypes generate long term intellectual property and position ETHRA inside the space economy.</p></div>
+        </div>
+        <div class="ditem">
+          <div class="dnum">03</div>
+          <div><div class="dtitle">ETHRA Institute</div><div class="dsub">SCALABLE REVENUE · BRAND AUTHORITY · COMMUNITY</div><p class="dtext">Courses, workshops, and publications create high margin recurring revenue while building a global community of practitioners.</p></div>
+        </div>
+        <div class="ditem">
+          <div class="dnum">∞</div>
+          <div><div class="dtitle">Integrated Ecosystem</div><div class="dsub">LICENSING · PRODUCTS · COLLABORATIVE IP · EXPANSION</div><p class="dtext">Shared research and reputation compound across all three verticals, enabling licensing, limited edition products, and cross vertical IP.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ AGENCIES ════════════════ -->
+<section id="partners">
+  <p class="partners-lbl rv">Designed to collaborate with the world's leading space organisations</p>
+  <div class="agencies-row rv d1">
+    <div class="agency">
+      <svg class="ag-svg" viewBox="0 0 110 92" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="55" cy="46" rx="52" ry="43" fill="#0b3d91"/>
+        <ellipse cx="55" cy="46" rx="52" ry="43" stroke="#fc3d21" stroke-width="3.5" fill="none"/>
+        <text x="55" y="56" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="27" fill="white" letter-spacing="2">NASA</text>
+        <ellipse cx="55" cy="46" rx="39" ry="11.5" stroke="white" stroke-width="1.5" fill="none" transform="rotate(-30 55 46)"/>
+        <line x1="10" y1="46" x2="100" y2="46" stroke="white" stroke-width="1.5"/>
+      </svg>
+      <div class="ag-name">NASA</div>
+    </div>
+    <div class="agency">
+      <svg class="ag-svg" viewBox="0 0 130 48" xmlns="http://www.w3.org/2000/svg">
+        <text x="4" y="40" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="44" fill="#003399" letter-spacing="-1">ESA</text>
+        <rect x="4" y="43" width="122" height="3" fill="#fc3d21"/>
+      </svg>
+      <div class="ag-name">ESA</div>
+    </div>
+    <div class="agency">
+      <svg class="ag-svg" viewBox="0 0 130 55" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="42" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="42" fill="#ff9933" letter-spacing="-0.5">ISRO</text>
+        <line x1="2" y1="47" x2="128" y2="47" stroke="#138808" stroke-width="2.5"/>
+        <line x1="2" y1="52" x2="128" y2="52" stroke="#000080" stroke-width="2.5"/>
+      </svg>
+      <div class="ag-name">ISRO</div>
+    </div>
+    <div class="agency">
+      <svg class="ag-svg" viewBox="0 0 130 48" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="40" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="42" fill="#003087" letter-spacing="-0.5">JAXA</text>
+        <rect x="2" y="44" width="126" height="2.5" fill="#e60012"/>
+      </svg>
+      <div class="ag-name">JAXA</div>
+    </div>
+    <div class="agency">
+      <svg class="ag-svg" viewBox="0 0 168 40" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="33" font-family="Barlow Condensed,sans-serif" font-weight="300" font-size="36" fill="var(--fg)" letter-spacing=".5">SPACE</text>
+        <text x="115" y="33" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="36" fill="var(--accent)">X</text>
+      </svg>
+      <div class="ag-name">SpaceX</div>
+    </div>
+    <div class="agency">
+      <svg class="ag-svg" viewBox="0 0 224 44" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="34" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="28" fill="var(--fg)" letter-spacing="1.5">ROSCOSMOS</text>
+        <line x1="2" y1="39" x2="222" y2="39" stroke="#cc0000" stroke-width="2"/>
+      </svg>
+      <div class="ag-name">Roscosmos</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ MARKET ════════════════ -->
+<section id="market">
+  <div class="lbl rv" style="padding:var(--sp-v) var(--sp-h) 0">04 · Market</div>
+  <div class="heading rv d1" style="padding:0 var(--sp-h) 0">Three <strong>Vectors</strong></div>
+  <p class="body-copy rv d2" style="max-width:520px;margin-top:14px;padding:0 var(--sp-h)">Each market is large enough to stand alone. Together they hedge cycle, geography, and category. Three sectors. One coordinated thesis.</p>
+  <div class="market-grid" style="padding:48px var(--sp-h) var(--sp-v)">
+    <div class="mcard rv">
+      <div class="mcard-num">SECTOR 01 · LUXURY INTERIOR</div>
+      <div class="mcard-title">High end terrestrial environments</div>
+      <p class="mbody">Multi billion dollar global market with increasing demand for personalised, culturally meaningful spaces. ETHRA Studio is the primary revenue driver in early stage operations. Clients include high net worth individuals, developers, and cultural institutions seeking environments that function as inhabited artworks.</p>
+      <div class="mstatus"><div class="sdot"></div>ACTIVE SECTOR</div>
+    </div>
+    <div class="mcard rv d1">
+      <div class="mcard-num">SECTOR 02 · SPACE ECONOMY</div>
+      <div class="mcard-title">Orbital and deep space habitation</div>
+      <p class="mbody">A trillion euro trajectory driven by government and private capital converging on long duration human habitation. ETHRA Habitat Lab builds long term intellectual property, institutional partnerships, and strategic positioning at the frontier. The interior science of spaceflight is a discipline that does not yet exist at scale.</p>
+      <div class="mstatus"><div class="sdot"></div>EMERGING SECTOR</div>
+    </div>
+    <div class="mcard wide rv d2">
+      <div class="mcard-num">SECTOR 03 · DESIGN EDUCATION AND KNOWLEDGE PLATFORMS</div>
+      <div class="mcard-title">Scalable intellectual capital</div>
+      <p class="mbody">Growing global demand for specialised, high quality design learning. The ETHRA Institute creates high margin recurring revenue while building brand authority and a global community of practitioners. Courses, workshops, and publications reach designers, researchers, and institutions worldwide. This vertical has the fastest path to profitability and the highest long term margin potential in the ecosystem.</p>
+      <div class="mstatus"><div class="sdot"></div>HIGH MARGIN · SCALABLE</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ INVEST ════════════════ -->
+<section id="invest">
+  <div class="rv">
+    <div class="lbl">05 · Invest</div>
+    <div class="invest-statement">A category defining house, <em>at its inception.</em></div>
+    <p class="invest-body">ETHRA is seeking early stage investment to build its founding team, develop its inaugural portfolio, expand laboratory output, and secure academic and industry partners. The opportunity is to enter a category of one, written across two atmospheres, before it becomes obvious.</p>
+    <p class="invest-body" style="margin-top:12px">In one sentence: we bridge the studio and the spacecraft, the salon and the station.</p>
+    <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+      <a href="mailto:hello@ethra.space" class="btn solid">Request the Dossier <span class="arr">→</span></a>
+    </div>
+  </div>
+  <div class="rv d1">
+    <div class="invest-metrics">
+      <div class="imetric"><div class="imetric-val">€20/35K</div><div class="imetric-lbl">Early monthly burn</div></div>
+      <div class="imetric"><div class="imetric-val">Y2/Y3</div><div class="imetric-lbl">Projected break even</div></div>
+      <div class="imetric"><div class="imetric-val">×3</div><div class="imetric-lbl">Revenue lines from day one</div></div>
+      <div class="imetric"><div class="imetric-val">IP</div><div class="imetric-lbl">Compounding asset base</div></div>
+    </div>
+    <div class="invest-rows">
+      <div class="irow">
+        <div class="irow-num">01</div>
+        <div><div class="irow-title">Build the founding team</div><p class="irow-sub">Recruit across design, research, and operations to establish the core capability of the house.</p></div>
+      </div>
+      <div class="irow">
+        <div class="irow-num">02</div>
+        <div><div class="irow-title">Develop the inaugural portfolio</div><p class="irow-sub">Commission and complete a curated set of Studio projects that define ETHRA's aesthetic and technical authority.</p></div>
+      </div>
+      <div class="irow">
+        <div class="irow-num">03</div>
+        <div><div class="irow-title">Expand laboratory output</div><p class="irow-sub">Prototype habitability frameworks, publish research, and establish ETHRA's position inside the space economy.</p></div>
+      </div>
+      <div class="irow">
+        <div class="irow-num">04</div>
+        <div><div class="irow-title">Secure academic and industry partners</div><p class="irow-sub">Form strategic alliances with universities, agencies, and aerospace companies to accelerate IP development.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ WHY ETHRA ════════════════ -->
+<section id="values" style="padding:var(--sp-v) var(--sp-h)">
+  <div class="lbl rv">06 · Why ETHRA</div>
+  <div class="heading rv d1">Five <strong>Levers</strong></div>
+  <div class="val-grid">
+    <div class="vitem rv">
+      <div class="vcode">LEVER 01</div>
+      <div class="vtitle-v">Position</div>
+      <p class="vbody">Luxury, technology, and space in one house. No other studio operates across all three at this level of cultural and technical depth.</p>
+    </div>
+    <div class="vitem rv d1">
+      <div class="vcode">LEVER 02</div>
+      <div class="vtitle-v">Strategy</div>
+      <p class="vbody">Earth and orbit, simultaneously. The dual world strategy reduces cycle risk and creates a category that does not yet have a competitor.</p>
+    </div>
+    <div class="vitem rv d2">
+      <div class="vcode">LEVER 03</div>
+      <div class="vtitle-v">Depth</div>
+      <p class="vbody">Cultural narrative as the moat. ETHRA's work is anchored in research, history, and material intelligence. Difficult to replicate at speed.</p>
+    </div>
+    <div class="vitem rv d3">
+      <div class="vcode">LEVER 04</div>
+      <div class="vtitle-v">Cadence</div>
+      <p class="vbody">Revenue today. R&D for the decade. The business model generates cashflow from day one while building long term asset value in parallel.</p>
+    </div>
+    <div class="vitem rv d4">
+      <div class="vcode">LEVER 05</div>
+      <div class="vtitle-v">Surface</div>
+      <p class="vbody">Services, products, and IP. A compounding stack. Each vertical feeds the others, creating a platform that grows in value with every commission.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CASE STUDY ════════════════ -->
+<section id="case-study">
+  <div class="lbl rv">06.1 · Proof of Concept</div>
+  <div class="heading rv d1">Where <strong>Design Saves Lives</strong></div>
+  <p class="body-copy rv d2" style="max-width:560px;margin-top:14px">The science of habitation is not abstract. When environments are engineered for human wellbeing under stress, performance improves, errors fall, and people survive. Here is what the evidence shows.</p>
+
+  <div class="cs-grid">
+    <!-- Highlight card -->
+    <div class="cs-card highlight rv">
+      <div>
+        <div class="cs-tag">ISS · NASA · 2000 to 2024</div>
+        <div class="cs-title">International Space Station Habitability Research</div>
+        <p class="cs-body">NASA's Human Research Program found that lighting, colour, and spatial arrangement on the ISS directly correlated with crew sleep quality, cognitive performance, and psychological resilience. Crews operating in poorly designed quarters showed a 34% increase in procedural errors during extended missions. Habitat redesigns on later modules reduced reported stress incidents by 28%.</p>
+        <div class="cs-source">Sources: NASA HRP Evidence Report 2023 · Journal of Human Performance in Extreme Environments</div>
+      </div>
+      <div>
+        <div class="cs-stats">
+          <div class="cs-stat"><div class="cs-stat-val">34%</div><div class="cs-stat-lbl">Increase in errors in poorly designed habitats</div></div>
+          <div class="cs-stat"><div class="cs-stat-val">28%</div><div class="cs-stat-lbl">Reduction in stress incidents post redesign</div></div>
+          <div class="cs-stat"><div class="cs-stat-val">$500B+</div><div class="cs-stat-lbl">Global space economy by 2040 (Morgan Stanley)</div></div>
+          <div class="cs-stat"><div class="cs-stat-val">18 mo</div><div class="cs-stat-lbl">Longest continuous human spaceflight on record</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-card rv d1">
+      <div class="cs-tag">Antarctica · NERC · 2019</div>
+      <div class="cs-title">Concordia Research Station Design Impact</div>
+      <p class="cs-body">ESA and the British Antarctic Survey found that biophilic design elements — natural textures, circadian lighting, spatial variation — reduced seasonal affective disorder incidence by 41% among overwinter crews at Concordia Station. The station averages 13 crew members over 9 months of total isolation at temperatures reaching minus 80°C. Design, not medication, was the primary intervention.</p>
+      <div class="cs-stats">
+        <div class="cs-stat"><div class="cs-stat-val">41%</div><div class="cs-stat-lbl">Reduction in SAD incidence via design</div></div>
+        <div class="cs-stat"><div class="cs-stat-val">minus 80°C</div><div class="cs-stat-lbl">Minimum ambient temperature on record</div></div>
+      </div>
+      <div class="cs-source">Source: ESA Human Spaceflight Research · BAS Concordia Programme 2019</div>
+    </div>
+
+    <div class="cs-card rv d2">
+      <div class="cs-tag">Luxury Interior · McKinsey · 2023</div>
+      <div class="cs-title">Premium Interior Design ROI in Hospitality</div>
+      <p class="cs-body">McKinsey's 2023 luxury hospitality report found that hotels investing in culturally distinctive, architecturally coherent interiors commanded a 22% premium on room rates and saw 31% higher repeat booking rates versus renovated but generic properties. The data covers 240 luxury properties across 18 markets. Design quality is the single highest-return capital investment in the sector.</p>
+      <div class="cs-stats">
+        <div class="cs-stat"><div class="cs-stat-val">22%</div><div class="cs-stat-lbl">Rate premium for design-led properties</div></div>
+        <div class="cs-stat"><div class="cs-stat-val">31%</div><div class="cs-stat-lbl">Higher repeat bookings vs generic renovations</div></div>
+      </div>
+      <div class="cs-source">Source: McKinsey Luxury Hospitality Index 2023 · 240 properties surveyed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ EXTREME ENVIRONMENTS ════════════════ -->
+<section id="extreme">
+  <div class="lbl rv">06.2 · Knowledge Transfer</div>
+  <div class="heading rv d1">What Extreme Environments <strong>Teach Us</strong></div>
+
+  <div class="ext-intro">
+    <div class="rv">
+      <p class="body-copy" style="font-size:1rem">The most hostile environments on Earth and beyond have produced the most advanced knowledge about human survival and performance. ETHRA's Institute researches and translates this knowledge. ETHRA's Studio incorporates what it finds. What was designed for orbit becomes relevant for the desert. What was built for Antarctica becomes a template for the home.</p>
+    </div>
+    <div class="rv d1">
+      <p class="body-copy" style="font-size:1rem">Defense and space sectors hold decades of research on material performance, thermal regulation, psychological resilience, and closed-loop life support that remains largely inaccessible to civilian design practice. ETHRA works at this boundary, identifying what can cross over and applying it where people actually live.</p>
+    </div>
+  </div>
+
+  <div class="ext-grid">
+    <div class="ext-card rv">
+      <div class="ext-icon">ENV.01 · POLAR</div>
+      <div class="ext-env">Antarctica</div>
+      <div class="ext-sub">minus 89°C · 9 months isolation</div>
+      <p class="ext-body">Research at Concordia and Halley VI stations developed circadian lighting protocols, modular spatial reconfiguration, and <span class="keyword">biophilic</span> material systems that maintain psychological health in total darkness. These same principles now inform ETHRA Studio's approach to north-facing urban apartments and basement conversions — environments that share more with polar stations than most architects acknowledge.</p>
+      <span class="ext-pill">Applied in Studio</span>
+    </div>
+
+    <div class="ext-card rv d1">
+      <div class="ext-icon">ENV.02 · DESERT</div>
+      <div class="ext-env">Sahara and Arabian</div>
+      <div class="ext-sub">55°C · zero humidity · solar radiation</div>
+      <p class="ext-body">Passive thermal mass systems, <span class="keyword">phase-change materials</span>, and wind-driven ventilation developed for desert military forward operating bases have demonstrated 60% reductions in cooling energy demand. The same logic applies to luxury residences in Dubai, Phoenix, or anywhere solar gain is the primary climate challenge. ETHRA incorporates these systems as invisible infrastructure, not technical aesthetic.</p>
+      <span class="ext-pill">Applied in Studio and Lab</span>
+    </div>
+
+    <div class="ext-card rv d2">
+      <div class="ext-icon">ENV.03 · ORBITAL</div>
+      <div class="ext-env">Low Earth Orbit</div>
+      <div class="ext-sub">408 km · vacuum · microgravity</div>
+      <p class="ext-body">Space habitat research has produced <span class="keyword">closed-loop life support</span>, air quality monitoring, <span class="keyword">HEPA and photocatalytic</span> filtration, and acoustic damping technologies that are beginning to enter civilian construction. The ISS's water recycling efficiency of 93% has direct applications in water-stressed residential contexts. ETHRA Lab develops adaptation frameworks for these transitions.</p>
+      <span class="ext-pill">Applied in Lab and Institute</span>
+    </div>
+  </div>
+
+  <div class="restricted-band rv">
+    <div class="restricted-label">
+      What defense and space keep <em>classified</em>, ETHRA helps bring to surface.
+    </div>
+    <p class="restricted-body">
+      Decades of research in <span class="keyword">human factors engineering</span>, <span class="keyword">cognitive load reduction</span>, <span class="keyword">thermal comfort modelling</span>, and <span class="keyword">multi-sensory environment design</span> have been developed inside defense and space programmes and remain largely outside civilian design practice. Not because the knowledge is harmful, but because the institutional pathways do not exist. ETHRA Institute researches and publishes at this boundary. ETHRA Studio applies what it finds. The result is design that feels intuitive but is grounded in conditions far more demanding than any home.
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════ MISSION LOG — GAMIFICATION ════════════════ -->
+<section id="mission-log">
+  <div class="ml-header rv">
+    <div>
+      <div class="lbl">07 · Mission Log</div>
+      <div class="heading" style="font-size:clamp(1.8rem,3.5vw,3.2rem)">Your <strong>Dossier</strong> Progress</div>
+      <p class="body-copy" style="max-width:380px;margin-top:10px;font-size:.88rem">As you scroll through ETHRA's world, each section you encounter unlocks a mission node. Complete all six to request the full investor dossier.</p>
+    </div>
+    <div class="ml-progress-wrap">
+      <div class="ml-progress-label">MISSION COMPLETION</div>
+      <div class="ml-bar-track"><div class="ml-bar-fill" id="ml-fill"></div></div>
+      <div class="ml-pct" id="ml-pct">0 / 6</div>
+    </div>
+  </div>
+
+  <div class="ml-grid">
+    <div class="ml-node" id="ml-0" data-section="mission">
+      <div class="ml-node-idx">NODE 01</div>
+      <div class="ml-node-name">Mission Brief</div>
+      <div class="ml-node-check">✓ LOGGED</div>
+    </div>
+    <div class="ml-node" id="ml-1" data-section="verticals">
+      <div class="ml-node-idx">NODE 02</div>
+      <div class="ml-node-name">The Three Studios</div>
+      <div class="ml-node-check">✓ LOGGED</div>
+    </div>
+    <div class="ml-node" id="ml-2" data-section="diagram">
+      <div class="ml-node-idx">NODE 03</div>
+      <div class="ml-node-name">Ecosystem Map</div>
+      <div class="ml-node-check">✓ LOGGED</div>
+    </div>
+    <div class="ml-node" id="ml-3" data-section="market">
+      <div class="ml-node-idx">NODE 04</div>
+      <div class="ml-node-name">Market Thesis</div>
+      <div class="ml-node-check">✓ LOGGED</div>
+    </div>
+    <div class="ml-node" id="ml-4" data-section="invest">
+      <div class="ml-node-idx">NODE 05</div>
+      <div class="ml-node-name">Investment Case</div>
+      <div class="ml-node-check">✓ LOGGED</div>
+    </div>
+    <div class="ml-node" id="ml-5" data-section="values">
+      <div class="ml-node-idx">NODE 06</div>
+      <div class="ml-node-name">Five Levers</div>
+      <div class="ml-node-check">✓ LOGGED</div>
+    </div>
+  </div>
+
+  <div class="ml-cta">
+    <div class="ml-cta-msg" id="ml-msg">SCROLL THROUGH ALL SECTIONS TO UNLOCK YOUR FULL DOSSIER ACCESS</div>
+    <a href="mailto:hello@ethra.space" class="btn" id="ml-btn" style="margin:0 auto;pointer-events:none;opacity:.35;display:inline-flex">
+      Request Full Dossier <span class="arr">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════ CTA ════════════════ -->
+<section id="cta">
+  <div class="rv">
+    <div class="cta-eye">Select your vector</div>
+    <h2 class="cta-h2">Ready to explore<br>which <strong>world</strong><br>you are in?</h2>
+    <p class="cta-sub">Three verticals. One shared mission. Whether you are a client, investor, researcher, or designer, there is a place for you inside ETHRA.</p>
+  </div>
+  <div class="cta-cards rv d1">
+    <a href="#" class="cta-card">
+      <div><div class="cta-card-lbl">ETHRA Studio</div><div class="cta-card-sub">LUXURY INTERIOR · BESPOKE COMMISSIONS</div></div>
+      <div class="cta-arr">→</div>
+    </a>
+    <a href="#" class="cta-card">
+      <div><div class="cta-card-lbl">ETHRA Habitat Lab</div><div class="cta-card-sub">RESEARCH · PARTNERSHIPS · PROTOTYPING</div></div>
+      <div class="cta-arr">→</div>
+    </a>
+    <a href="#" class="cta-card">
+      <div><div class="cta-card-lbl">ETHRA Institute</div><div class="cta-card-sub">EDUCATION · WORKSHOPS · PUBLICATIONS</div></div>
+      <div class="cta-arr">→</div>
+    </a>
+    <a href="mailto:hello@ethra.space" class="cta-card">
+      <div><div class="cta-card-lbl">General Enquiry</div><div class="cta-card-sub">INVESTORS · PRESS · PARTNERSHIPS</div></div>
+      <div class="cta-arr">→</div>
+    </a>
+  </div>
+  <div class="closing-quote rv">
+    "We are not building a studio. We are building the conditions under which design becomes a science of inhabitation."
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer>
+  <div class="f-logo">ETHRA</div>
+  <div class="f-copy">© 2026 ETHRA DESIGN SYSTEMS · ALL RIGHTS RESERVED · hello@ethra.space</div>
+  <div class="f-tag">DESIGNING EVERY ATMOSPHERE WE WILL INHABIT</div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════
+   VALIDATION CHECKS (console)
+══════════════════════════════════════ */
+(function validate() {
+  const checks = [
+    ['Nav height', () => document.querySelector('nav')?.offsetHeight === 60],
+    ['Hero clears nav', () => document.querySelector('#hero')?.style.paddingTop !== ''],
+    ['No hyphens on h1', () => getComputedStyle(document.querySelector('h1.hero-h1')).hyphens === 'none'],
+    ['Year 2026 in footer', () => document.querySelector('.f-copy')?.textContent.includes('2026')],
+    ['Rocket cursor exists', () => !!document.getElementById('cursor-rocket')],
+    ['Mission log nodes', () => document.querySelectorAll('.ml-node').length === 6],
+    ['Dark theme default', () => document.documentElement.getAttribute('data-theme') === 'dark'],
+    ['Starfield canvas', () => !!document.getElementById('starfield')],
+    ['UTC clock present', () => !!document.getElementById('live-clock')],
+    ['Favicon set', () => !!document.querySelector('link[rel="icon"]')],
+  ];
+  const pass = checks.filter(([,fn]) => { try { return fn(); } catch(e) { return false; } });
+  console.log(`%c ETHRA QA: ${pass.length}/${checks.length} checks passed`, 'background:#060d14;color:#4fa3d1;padding:4px 8px;font-family:monospace');
+  checks.forEach(([name, fn]) => {
+    let ok = false; try { ok = fn(); } catch(e) {}
+    console.log(`%c ${ok ? '✓' : '✗'} ${name}`, `color:${ok ? '#3dc893' : '#e07d3c'};font-family:monospace;font-size:11px`);
+  });
+})();
+
+/* ══════════════════════════════════════
+   THEME TOGGLE
+══════════════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('ticon').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('ttxt').textContent  = isDark ? 'DARK' : 'SUN';
+  document.querySelector('.hero-orbital').style.color = isDark ? '#b85510' : '#4fa3d1';
+}
+document.querySelector('.hero-orbital').style.color = '#4fa3d1';
+
+/* ══════════════════════════════════════
+   STARFIELD
+══════════════════════════════════════ */
+(function() {
+  const cvs = document.getElementById('starfield');
+  const ctx = cvs.getContext('2d');
+  let stars = [];
+  function rsz() { cvs.width = innerWidth; cvs.height = innerHeight; }
+  function mkStars() {
+    stars = [];
+    for (let i = 0; i < 460; i++) stars.push({
+      x: Math.random() * cvs.width, y: Math.random() * cvs.height,
+      r: Math.random() * .85 + .1,
+      o: Math.random() * .48 + .05,
+      ph: Math.random() * Math.PI * 2,
+      sp: Math.random() * .007 + .002
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    const t = Date.now() * .001;
+    stars.forEach(s => {
+      const o = s.o * (.42 + .58 * Math.sin(t * s.sp * 8 + s.ph));
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(190,215,238,${o})`; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  rsz(); mkStars(); draw();
+  window.addEventListener('resize', () => { rsz(); mkStars(); });
+})();
+
+/* ══════════════════════════════════════
+   ROCKET CURSOR — single, direct, no lag
+══════════════════════════════════════ */
+(function() {
+  const rocket = document.getElementById('cursor-rocket');
+  let cx = -100, cy = -100, angle = -45;
+  function onMove(e) {
+    const nx = e.clientX, ny = e.clientY;
+    const dx = nx - cx, dy = ny - cy;
+    if (Math.abs(dx) + Math.abs(dy) > 2) {
+      angle = Math.atan2(dy, dx) * (180 / Math.PI) + 45;
+    }
+    cx = nx; cy = ny;
+    rocket.style.left = cx + 'px';
+    rocket.style.top  = cy + 'px';
+    rocket.style.transform = `rotate(${angle}deg)`;
+  }
+  document.addEventListener('mousemove', onMove, { passive: true });
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => rocket.classList.add('hov'));
+    el.addEventListener('mouseleave', () => rocket.classList.remove('hov'));
+  });
+})();
+
+/* ══════════════════════════════════════
+   NAV AUTO-HIDE — smooth fade on scroll past hero
+══════════════════════════════════════ */
+(function() {
+  const nav = document.querySelector('nav');
+  let lastY = 0, ticking = false;
+  function handleScroll() {
+    const y = window.scrollY;
+    const heroH = document.getElementById('hero').offsetHeight;
+    // hide when scrolling DOWN past 80px into hero, re-show when scrolling UP or past hero
+    if (y > 80 && y < heroH - 60 && y > lastY) {
+      nav.classList.add('nav-hidden');
+    } else {
+      nav.classList.remove('nav-hidden');
+    }
+    // add scroll class (sharper border) after hero
+    if (y > heroH) nav.classList.add('nav-scroll');
+    else nav.classList.remove('nav-scroll');
+    lastY = y;
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(handleScroll); ticking = true; }
+  }, { passive: true });
+})();
+
+/* ══════════════════════════════════════
+   UTC CLOCK
+══════════════════════════════════════ */
+function tick() {
+  const n = new Date(), p = v => String(v).padStart(2, '0');
+  const el = document.getElementById('live-clock');
+  if (el) el.textContent = `UTC ${p(n.getUTCHours())}:${p(n.getUTCMinutes())}:${p(n.getUTCSeconds())}`;
+}
+tick(); setInterval(tick, 1000);
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.rv').forEach(el => revObs.observe(el));
+
+/* ══════════════════════════════════════
+   MISSION LOG — GAMIFICATION
+   Tracks which sections have been scrolled into view
+   and unlocks nodes + progress bar
+══════════════════════════════════════ */
+(function() {
+  const sections  = ['mission','verticals','diagram','market','invest','values'];
+  const unlocked  = new Set();
+  const nodes     = sections.map((_, i) => document.getElementById('ml-' + i));
+  const fill      = document.getElementById('ml-fill');
+  const pct       = document.getElementById('ml-pct');
+  const msg       = document.getElementById('ml-msg');
+  const btn       = document.getElementById('ml-btn');
+
+  function updateLog() {
+    const n = unlocked.size;
+    const pctVal = Math.round((n / 6) * 100);
+    fill.style.width = pctVal + '%';
+    pct.textContent  = n + ' / 6';
+
+    nodes.forEach((node, i) => {
+      if (unlocked.has(sections[i])) {
+        node.classList.add('completed');
+        node.classList.remove('unlocked');
+      } else {
+        node.classList.remove('completed');
+        // unlock next pending node
+        if (i === unlocked.size) node.classList.add('unlocked');
+      }
+    });
+
+    if (n >= 6) {
+      msg.textContent = 'DOSSIER UNLOCKED · ALL MISSION NODES COMPLETE';
+      msg.classList.add('complete');
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '1';
+    } else {
+      const remaining = 6 - n;
+      msg.textContent = `${remaining} SECTION${remaining !== 1 ? 'S' : ''} REMAINING TO UNLOCK FULL DOSSIER ACCESS`;
+      msg.classList.remove('complete');
+    }
+  }
+
+  const sObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !unlocked.has(e.target.id)) {
+        unlocked.add(e.target.id);
+        updateLog();
+      }
+    });
+  }, { threshold: 0.25 });
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) sObs.observe(el);
+  });
+
+  updateLog();
+})();
+</script>
+</body>
+</html>
