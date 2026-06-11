@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Every strong thesis begins with a question that feels personal before it becomes academic. This is the story of how a childhood fascination with space became a research framework for interior architecture at the limits of human inhabitation.">
+<title>From Personal Fascination to Design Research — Article 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F4F7;--ink:#160F1A;--ink-2:#342840;--ink-3:#70688A;
+  --white:#FFFFFF;--rule:#DDD8E8;
+  --accent:#4A2A6A;--hero-bg:#10081A;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:17px;line-height:1.78;-webkit-font-smoothing:antialiased}
+.progress-bar{position:fixed;top:50px;left:0;width:0%;height:2px;background:var(--accent);z-index:200}
+.topbar{background:var(--hero-bg);padding:0 clamp(1.5rem,6vw,5rem);height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid #201030}
+.topbar-series{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#3A2858}
+.topbar-nav{display:flex;gap:1.75rem;list-style:none}
+.topbar-nav a{font-size:11px;letter-spacing:.06em;color:#3A2858;text-decoration:none;transition:color .2s}
+.topbar-nav a:hover,.topbar-nav a.active{color:#C0A8D8}
+.hero{background:var(--hero-bg);min-height:88vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(1.5rem,8vw,8rem) clamp(3rem,7vh,5.5rem);position:relative;overflow:hidden}
+.hero-img{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;opacity:.22;filter:saturate(.5) hue-rotate(200deg)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,#10081A 38%,rgba(16,8,26,.3))}
+.hero-meta{display:flex;gap:1.5rem;margin-bottom:1.75rem;align-items:center;position:relative;z-index:1}
+.hero-tag{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#C0A8D8;border:1px solid #2A1848;padding:5px 14px;border-radius:2px}
+.hero-series{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#281840}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,7vw,5.2rem);font-weight:400;line-height:1.06;color:#EAE4F0;max-width:820px;position:relative;z-index:1}
+.hero h1 em{font-style:italic;color:#C0A8D8}
+.hero-deck{font-size:clamp(1rem,2vw,1.18rem);font-weight:300;color:#7860A0;max-width:580px;margin-top:1.75rem;line-height:1.7;position:relative;z-index:1}
+.article-wrap{max-width:740px;margin:0 auto;padding:clamp(3rem,8vw,6rem) clamp(1.5rem,6vw,3rem)}
+.article-byline{display:flex;flex-wrap:wrap;gap:2rem;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-bottom:2rem;border-bottom:1px solid var(--rule);margin-bottom:3rem}
+.prose p{font-size:17px;line-height:1.82;color:var(--ink-2);margin-bottom:1.6rem}
+.prose p:first-of-type::first-letter{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:500;float:left;line-height:.82;margin:.06em .07em -.02em 0;color:var(--accent)}
+.prose h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:500;color:var(--ink);margin:3.5rem 0 1.1rem;letter-spacing:-.01em}
+.prose blockquote{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;color:var(--ink);line-height:1.42;margin:3.5rem 0;padding:2rem 2.5rem;border-left:3px solid var(--accent);background:var(--white)}
+.prose blockquote footer{font-family:'DM Sans',sans-serif;font-size:11px;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:.9rem;display:block}
+figure{margin:3.5rem 0}
+figure img{width:100%;display:block;border-radius:3px;background:#180C28;min-height:60px}
+figcaption{font-size:12px;line-height:1.65;color:var(--ink-3);margin-top:.85rem;padding-left:.9rem;border-left:2px solid var(--rule)}
+figcaption strong{color:var(--ink-2)}
+figcaption a{color:var(--accent);text-decoration:none}
+figcaption a:hover{text-decoration:underline}
+.thesis-pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin:3rem 0}
+.pillar{background:var(--white);padding:1.5rem 1.75rem}
+.pillar-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:var(--accent);opacity:.35;line-height:1;margin-bottom:.5rem}
+.pillar-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+.pillar-body{font-size:13px;line-height:1.58;color:var(--ink-2)}
+.references{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:2rem 2.5rem;margin-top:4rem}
+.references h4{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:1.25rem}
+.references ol{padding-left:1.2rem}
+.references li{font-size:12.5px;line-height:1.75;color:var(--ink-2);margin-bottom:.55rem}
+.references li a{color:var(--accent);text-decoration:none}
+.series-end{background:var(--hero-bg);padding:clamp(3rem,6vw,5rem) clamp(1.5rem,8vw,8rem);border-top:1px solid #201030}
+.series-end-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#281840;margin-bottom:1.5rem}
+.series-end-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:400;color:#C0A8D8;margin-bottom:2.5rem;line-height:1.25}
+.series-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:#201030;border:1px solid #201030;border-radius:3px;overflow:hidden}
+.sg-item{background:#10081A;padding:1.25rem 1.5rem;text-decoration:none;transition:background .2s}
+.sg-item:hover{background:#16102A}
+.sg-num{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#3A2858;margin-bottom:.5rem}
+.sg-title{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:#7860A0;line-height:1.35}
+.sg-item.current .sg-num{color:var(--accent)}
+.sg-item.current .sg-title{color:#C0A8D8}
+@media(max-width:640px){.topbar-nav{display:none}.hero{min-height:72vh}.series-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="prog"></div>
+<nav class="topbar">
+  <span class="topbar-series">Designing Human Space — Series</span>
+  <ul class="topbar-nav">
+    <li><a href="article-01-interior-architecture-beyond-earth.html">01 — Beyond Earth</a></li>
+    <li><a href="article-02-designing-for-isolation.html">02 — Isolation</a></li>
+    <li><a href="article-03-modular-habitats.html">03 — Modular</a></li>
+    <li><a href="article-04-personal-fascination-to-design-research.html" class="active">04 — Research</a></li>
+  </ul>
+</nav>
+<header class="hero">
+  <img class="hero-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/KECK_OBSERVATORY.jpg/1280px-KECK_OBSERVATORY.jpg" alt="Mauna Kea Observatory" onerror="this.style.display='none'">
+  <div class="hero-overlay"></div>
+  <div class="hero-meta">
+    <span class="hero-tag">Article 04 of 04</span>
+    <span class="hero-series">Research Practice · Design Methodology · Thesis Development</span>
+  </div>
+  <h1>From Personal Fascination<br>to <em>Design Research</em></h1>
+  <p class="hero-deck">Building a thesis on extreme habitats — how a childhood question about what it would feel like to be on Mars became the foundation of a rigorous interior architecture research practice.</p>
+</header>
+<main class="article-wrap">
+  <div class="article-byline">
+    <span>Research Practice</span>
+    <span>Design Methodology</span>
+    <span>Thesis Development</span>
+    <span>Interior Architecture</span>
+  </div>
+  <div class="prose">
+    <p>Every strong thesis begins with a question that feels personal long before it becomes academic. The impulse to study something with rigour typically has its origin in an encounter that preceded methodology, literature reviews, and research frameworks — an encounter that left a residue of genuine curiosity, an unresolved wondering that no casual engagement could fully address. For me, the question at the centre of this research was simple in its formulation and extraordinarily complex in its implications: how do we design spaces that can hold human life in places that are not, by nature, designed to hold it at all?</p>
+    <p>The question arrived before I had the language to articulate it. It arrived as a child staring at a poster of the solar system, wondering not merely at the distances involved but at what it would mean to be inside that distance — to inhabit a volume of space so remote that the concept of home would require complete reinvention. It was a spatial question, even then. Not: can we reach Mars? But: what would it feel like to be there?</p>
+    <figure>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/KECK_OBSERVATORY.jpg/1280px-KECK_OBSERVATORY.jpg" alt="Mauna Kea Observatory, Hawaii" onerror="this.style.height='340px';this.removeAttribute('src')">
+      <figcaption><strong>Fig. 1 —</strong> Mauna Kea Observatory Complex, Hawaii. High-altitude observatory facilities represent one of the most demanding inhabited extreme environments on Earth, and directly informed NASA's analog habitat research methodology at the nearby HI-SEAS site. <a href="https://keckobservatory.org/" target="_blank">Source: W.M. Keck Observatory</a></figcaption>
+    </figure>
+    <h3>The Cafeteria on Mars: A First Design Inquiry</h3>
+    <p>The first concrete design proposition that grew from this fascination was modest in its ambition and instructive in what it revealed. Asked in a first-year studio to design a speculative interior for a non-terrestrial context, I chose a communal dining space within a Mars habitat module — serving a crew of eight on a long-duration surface mission.</p>
+    <p>The brief seemed simple. It became immediately clear that it was not. Every conventional assumption about the spatial design of communal dining — the relationship between the preparation and consumption of food, the acoustic treatment appropriate to social interaction, the lighting strategy that supports both task-focused meal preparation and relaxed social gathering, the material language that establishes the warmth and domesticity associated with the shared table — had to be fundamentally rethought in the light of the Martian context. There was no natural light. There was no organic material available on site. The acoustic environment of a pressurised module bears no resemblance to a terrestrial room. The psychological significance of the shared meal — as a ritual that punctuates the day, affirms social cohesion, and provides a moment of genuine sensory pleasure in an environment of relentless operational demand — was, if anything, amplified by the extremity of the context. The cafeteria, I came to understand, was not a service space. It was the most important room in the habitat.</p>
+    <blockquote>
+      "The interior architect working in extreme environments is not designing rooms. They are designing the conditions under which a human being can sustain their humanity. That is a different brief — and it demands a different intelligence."
+    </blockquote>
+    <h3>Antarctica as Turning Point: The Inhabited Extreme</h3>
+    <p>The inflection point in my research trajectory was an extended engagement with the design literature and post-occupancy evaluation data from Antarctic research stations — particularly Concordia and Halley VI, both subject to significant habitability-focused design research. The Antarctic station is, in many respects, the most rigorous real-world test of extreme-environment interior architecture currently available: it subjects a small crew to many months of complete isolation, near-total darkness, extreme cold, restricted mobility, and the social friction of enforced proximity.</p>
+    <p>What struck me most profoundly in this material was not the technical ingenuity of the structural solutions — though that ingenuity is considerable — but the degree to which the quality of the interior was consistently identified, in post-occupancy evaluations and crew testimonials, as the primary determinant of psychological wellbeing. Crews at Concordia described the colour treatment of their personal quarters with the same intensity that they described the experience of isolation. Crews at Halley VI — whose Hugh Broughton Architects-designed station introduced a deliberately warm, material-rich interior aesthetic — reported markedly higher satisfaction scores across all habitability dimensions measured. This was empirical confirmation of what the design intelligence already suggested: interior architecture, in extreme environments, is not a secondary professional concern subordinate to engineering. It is co-primary.</p>
+    <div class="thesis-pillars">
+      <div class="pillar"><p class="pillar-num">I</p><p class="pillar-label">Environmental Psychology</p><p class="pillar-body">Empirical evidence base for the relationships between spatial conditions and human wellbeing under stress.</p></div>
+      <div class="pillar"><p class="pillar-num">II</p><p class="pillar-label">Human Factors Engineering</p><p class="pillar-body">Operational performance criteria against which habitat interior design must be evaluated over mission duration.</p></div>
+      <div class="pillar"><p class="pillar-num">III</p><p class="pillar-label">Interior Architecture</p><p class="pillar-body">Spatial intelligence, material knowledge, and projective design capacity to translate findings into inhabitable space.</p></div>
+    </div>
+    <h3>Toward a Thesis: Personal Story as Research Foundation</h3>
+    <p>The academic legitimation of a personal research trajectory — the process of transforming fascination into methodology and curiosity into rigour — is one of the most important intellectual operations available to the design researcher. It does not require the suppression of personal investment; on the contrary, the personal investment is the engine of the inquiry. What it requires is the application of disciplinary methods, the construction of an evidential argument, and the development of a conceptual framework robust enough to sustain the weight of the claims being made.</p>
+    <p>In the case of this research, that framework is provided by the convergence of three disciplinary bodies: environmental psychology, which provides the empirical evidence base; human factors engineering, which provides the operational performance criteria; and interior architecture as a design practice, which provides the spatial intelligence and projective capacity to translate research findings into spatial propositions.</p>
+    <h3>Vision: Interior Architecture as the Frontier Discipline</h3>
+    <p>The design of extreme-environment habitats has largely been led by aerospace engineers, human factors specialists, and systems engineers — all of whom bring indispensable expertise, and none of whom are trained to design the spatial and material experience of an interior with the depth and intentionality that the conditions require. Interior architecture must position itself as the frontier discipline for the design of inhabited extreme environments — not as a decorator applied after engineering is complete, but as a co-designer from the earliest stages: contributing spatial intelligence, material knowledge, and human-centred design thinking to the complex, multidisciplinary enterprise of making space for human beings at the edge of what is possible.</p>
+    <p>The question that began with a child staring at a poster of the solar system has not become smaller through research. It has become larger, more specific, and more urgent. The stars are still there. And so, increasingly, are the spaces we must design to reach them.</p>
+  </div>
+  <div class="references">
+    <h4>References &amp; Sources</h4>
+    <ol>
+      <li>Häuplik-Meusburger, S. &amp; Bannova, O. (Eds.) <em>Space Architecture Education for Engineers and Architects.</em> Springer, 2016.</li>
+      <li>Hugh Broughton Architects. <em>Halley VI Antarctic Research Station.</em> 2013. <a href="https://www.hba.co.uk/projects/halley-vi-antarctic-research-station/" target="_blank">hba.co.uk</a></li>
+      <li>ESA / IPEV. <em>Concordia Station Human Research Programme.</em> 2022. <a href="https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Concordia" target="_blank">esa.int</a></li>
+      <li>NASA Human Research Program. <em>Evidence Report: Risk of Adverse Cognitive or Behavioral Conditions.</em> NASA, 2021. <a href="https://humanresearchroadmap.nasa.gov/" target="_blank">humanresearchroadmap.nasa.gov</a></li>
+      <li>Altman, I. <em>The Environment and Social Behavior.</em> Brooks/Cole, 1975.</li>
+      <li>Heerwagen, J. &amp; Hase, B. "Building Biophilia." <em>Environmental Design + Construction</em>, 2001.</li>
+    </ol>
+  </div>
+</main>
+<footer class="series-end">
+  <p class="series-end-label">End of series</p>
+  <p class="series-end-title">Designing Human Space at the Edge of the World</p>
+  <div class="series-grid">
+    <a class="sg-item" href="article-01-interior-architecture-beyond-earth.html">
+      <p class="sg-num">Article 01</p>
+      <p class="sg-title">Interior Architecture Beyond Earth</p>
+    </a>
+    <a class="sg-item" href="article-02-designing-for-isolation.html">
+      <p class="sg-num">Article 02</p>
+      <p class="sg-title">Designing for Isolation</p>
+    </a>
+    <a class="sg-item" href="article-03-modular-habitats.html">
+      <p class="sg-num">Article 03</p>
+      <p class="sg-title">Modular Habitats, Flexible Lives</p>
+    </a>
+    <a class="sg-item current" href="article-04-personal-fascination-to-design-research.html">
+      <p class="sg-num">Article 04</p>
+      <p class="sg-title">From Personal Fascination to Design Research</p>
+    </a>
+  </div>
+</footer>
+<script>const p=document.getElementById('prog');window.addEventListener('scroll',()=>{const h=document.documentElement;p.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'})</script>
+</body>
+</html>
