@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETHRA — Human-Centric Habitat Design</title>
+<meta name="description" content="A luxury interior studio, a space habitat lab, and a design institute. Designing environments for Earth and beyond.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23020508'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='36' font-family='sans-serif'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,200;0,300;0,400;0,600;1,300&family=Barlow+Condensed:ital,wght@0,200;0,300;0,400;0,600;0,700;1,300&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────────── */
+:root { --nav-h:56px; --sp:88px; --sp-sm:56px; --gutter:52px; }
+
+[data-theme="dark"] {
+  --bg:     #030609;
+  --panel:  #07101a;
+  --card:   #0c1826;
+  --fg:     #e0eaf4;
+  --dim:    rgba(224,234,244,.48);
+  --faint:  rgba(224,234,244,.18);
+  --a:      #4d9fcb;
+  --a-d:    rgba(77,159,203,.24);
+  --a-f:    rgba(77,159,203,.06);
+  --a2:     #d97b3a;
+  --a3:     #38c488;
+  --line:   rgba(77,159,203,.11);
+  --line2:  rgba(77,159,203,.28);
+  --hero-img: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1800&q=85') center/cover no-repeat;
+  --hero-mask: linear-gradient(110deg,rgba(3,6,9,.96) 0%,rgba(3,6,9,.72) 52%,rgba(3,6,9,.18) 100%);
+  --star-op:1;
+}
+[data-theme="light"] {
+  --bg:     #f3ede2;
+  --panel:  #ebe3d0;
+  --card:   #e1d8c3;
+  --fg:     #16100a;
+  --dim:    rgba(22,16,10,.52);
+  --faint:  rgba(22,16,10,.28);
+  --a:      #b05210;
+  --a-d:    rgba(176,82,16,.26);
+  --a-f:    rgba(176,82,16,.06);
+  --a2:     #195882;
+  --a3:     #24754a;
+  --line:   rgba(176,82,16,.13);
+  --line2:  rgba(176,82,16,.34);
+  --hero-img: url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=1800&q=85') center/cover no-repeat;
+  --hero-mask: linear-gradient(110deg,rgba(243,237,226,.97) 0%,rgba(243,237,226,.82) 52%,rgba(243,237,226,.25) 100%);
+  --star-op:0;
+}
+
+/* ─────────────────────────────────────────────
+   RESET
+───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;font-size:16px}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'Barlow',sans-serif;
+  overflow-x:hidden;cursor:none;
+  transition:background .5s,color .4s;
+}
+[data-theme="dark"] body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.014) 3px,rgba(0,0,0,.014) 4px);
+}
+
+/* ─────────────────────────────────────────────
+   CURSOR
+───────────────────────────────────────────── */
+#cr{
+  position:fixed;pointer-events:none;z-index:9999;
+  width:26px;height:26px;margin:-13px 0 0 -13px;
+  will-change:left,top;
+}
+#cr svg{width:100%;height:100%;filter:drop-shadow(0 0 5px var(--a-d));transition:filter .2s;}
+#cr.hov svg{filter:drop-shadow(0 0 9px var(--a)) drop-shadow(0 2px 14px var(--a-d));animation:rUp .38s ease forwards;}
+#cr:not(.hov) svg{animation:rDown .28s ease forwards;}
+@keyframes rUp{to{transform:translateY(-3px) scale(1.12)}}
+@keyframes rDown{to{transform:translateY(0) scale(1)}}
+#cr.pop::before{content:'';position:absolute;top:50%;left:50%;
+  width:8px;height:8px;margin:-4px 0 0 -4px;
+  border:1px solid var(--a);border-radius:50%;
+  animation:pop .5s ease-out forwards;}
+@keyframes pop{100%{width:48px;height:48px;margin:-24px 0 0 -24px;opacity:0}}
+.xflame{animation:fl .42s ease-in-out infinite alternate;}
+@keyframes fl{from{opacity:.55;transform:scaleY(.82)}to{opacity:.95;transform:scaleY(1.14)}}
+
+/* ─────────────────────────────────────────────
+   STARFIELD
+───────────────────────────────────────────── */
+#sf{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:var(--star-op,1);transition:opacity .7s;}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:1;}
+.hc{position:absolute;width:13px;height:13px;border-color:var(--a-d);border-style:solid;}
+.hc.tl{top:14px;left:14px;border-width:1px 0 0 1px}
+.hc.tr{top:14px;right:14px;border-width:1px 1px 0 0}
+.hc.bl{bottom:14px;left:14px;border-width:0 0 1px 1px}
+.hc.br{bottom:14px;right:14px;border-width:0 1px 1px 0}
+nav,section,footer,.pb{position:relative;z-index:2}
+
+/* ─────────────────────────────────────────────
+   NAVIGATION
+   Saga benchmark: minimal, transparent on hero,
+   wordmark left, 6 links centred, single CTA right.
+   No decorative borders between links.
+───────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 var(--gutter);
+  transition:background .5s,border-color .4s,transform .4s cubic-bezier(.4,0,.2,1),opacity .4s;
+  border-bottom:1px solid transparent;
+}
+[data-theme="dark"]  nav{background:transparent}
+[data-theme="light"] nav{background:transparent}
+[data-theme="dark"]  nav.solid{background:rgba(3,6,9,.94);border-bottom-color:var(--line)}
+[data-theme="light"] nav.solid{background:rgba(243,237,226,.96);border-bottom-color:var(--line)}
+nav.solid::after{content:'';position:absolute;inset:0;z-index:-1;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+nav.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
+
+.n-logo{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:1.08rem;letter-spacing:.32em;
+  color:var(--fg);text-decoration:none;
+  display:flex;align-items:center;gap:9px;
+  flex-shrink:0;
+  transition:color .4s;
+}
+.n-dot{width:6px;height:6px;border-radius:50%;background:var(--a);flex-shrink:0;
+  animation:bk 2.6s ease-in-out infinite;transition:background .4s}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.1}}
+
+.n-links{
+  display:flex;list-style:none;
+  flex:1;justify-content:center;gap:0;
+}
+.n-links a{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;
+  padding:0 22px;height:var(--nav-h);
+  display:flex;align-items:center;
+  transition:color .2s;
+}
+.n-links a:hover{color:var(--fg)}
+
+.n-right{display:flex;align-items:center;gap:20px;flex-shrink:0}
+.n-cta{
+  font-family:'Barlow Condensed',sans-serif;font-weight:400;
+  font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--a);text-decoration:none;
+  border:1px solid var(--a-d);padding:9px 20px;
+  transition:border-color .2s,background .2s,color .2s;
+}
+.n-cta:hover{border-color:var(--a);background:var(--a-f)}
+.n-theme{
+  cursor:none;background:none;border:none;padding:0;
+  display:flex;align-items:center;
+  font-size:1.05rem;line-height:1;
+  transition:transform .3s;
+}
+.n-theme:hover{transform:rotate(20deg)}
+
+/* ─────────────────────────────────────────────
+   HERO
+   Saga benchmark: full viewport, single bold
+   statement, minimal UI, let the image breathe.
+   Remove telemetry strip — too much HUD noise.
+───────────────────────────────────────────── */
+#hero{
+  min-height:100vh;
+  padding-top:var(--nav-h);
+  display:flex;flex-direction:column;
+  justify-content:flex-end;
+  position:relative;overflow:hidden;
+}
+.h-bg{
+  position:absolute;inset:0;
+  background:var(--hero-img);
+  transition:background 0s;
+}
+.h-bg::after{
+  content:'';position:absolute;inset:0;
+  background:var(--hero-mask);
+  transition:background .5s;
+}
+.h-orb{
+  position:absolute;right:-40px;
+  top:calc(50% + var(--nav-h)/2);
+  transform:translateY(-50%);
+  width:min(560px,54vw);height:min(560px,54vw);
+  color:var(--a);opacity:.14;
+  animation:spin 100s linear infinite;
+  pointer-events:none;transition:color .4s,opacity .4s;
+}
+[data-theme="light"] .h-orb{opacity:.22}
+@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+
+.h-body{
+  position:relative;z-index:3;
+  padding:0 var(--gutter) 80px;
+  max-width:900px;
+}
+.h-kicker{
+  font-family:'Share Tech Mono',monospace;font-size:.54rem;
+  color:var(--a);letter-spacing:.28em;text-transform:uppercase;
+  margin-bottom:22px;display:flex;align-items:center;gap:12px;
+  opacity:0;animation:fu .9s .2s forwards;
+  transition:color .4s;
+}
+.h-kicker::before{content:'';width:24px;height:1px;background:var(--a)}
+h1{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(5rem,11.5vw,13rem);
+  line-height:.86;letter-spacing:-.015em;text-transform:uppercase;
+  color:var(--fg);hyphens:none;word-break:keep-all;
+  opacity:0;animation:fu .95s .38s forwards;
+  transition:color .4s;
+}
+h1 .ac{color:var(--a);font-weight:300;transition:color .4s}
+.h-sub{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(.8rem,1.4vw,1.1rem);
+  letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dim);margin-top:14px;
+  opacity:0;animation:fu .8s .58s forwards;
+  transition:color .4s;hyphens:none;
+}
+.h-sub .sep{margin:0 10px;color:var(--a-d)}
+.h-desc{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:1rem;line-height:1.82;color:var(--dim);
+  max-width:460px;margin-top:24px;
+  opacity:0;animation:fu .8s .74s forwards;
+  transition:color .4s;hyphens:none;
+}
+.h-actions{
+  display:flex;gap:12px;margin-top:36px;flex-wrap:wrap;
+  opacity:0;animation:fu .8s .9s forwards;
+}
+.h-scroll{
+  position:absolute;bottom:26px;left:var(--gutter);z-index:3;
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--faint);letter-spacing:.22em;
+  display:flex;align-items:center;gap:9px;
+  transition:color .4s;
+}
+.h-scroll-line{width:32px;height:1px;background:var(--line2)}
+@keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─────────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────────── */
+.btn{
+  cursor:none;
+  font-family:'Barlow Condensed',sans-serif;font-weight:400;
+  font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  text-decoration:none;
+  border:1px solid var(--line2);color:var(--fg);
+  padding:12px 26px;display:inline-flex;align-items:center;gap:9px;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.btn:hover{border-color:var(--a);color:var(--a);background:var(--a-f)}
+.btn.fill{background:var(--a);border-color:var(--a);color:#fff}
+.btn.fill:hover{background:transparent;color:var(--a)}
+.btn .ar{transition:transform .2s}
+.btn:hover .ar{transform:translateX(4px)}
+
+/* ─────────────────────────────────────────────
+   SHARED SECTION UTILITIES
+───────────────────────────────────────────── */
+.sec{padding:var(--sp) var(--gutter)}
+.sec-sm{padding:var(--sp-sm) var(--gutter)}
+.sec-label{
+  font-family:'Share Tech Mono',monospace;font-size:.52rem;
+  color:var(--a);letter-spacing:.28em;text-transform:uppercase;
+  margin-bottom:6px;display:flex;align-items:center;gap:8px;
+  transition:color .4s;
+}
+.sec-label::before{content:'';width:12px;height:1px;background:var(--a)}
+.h2{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(2.2rem,4.5vw,4.8rem);
+  text-transform:uppercase;letter-spacing:.04em;line-height:.94;
+  color:var(--fg);hyphens:none;transition:color .4s;
+}
+.h2 b{font-weight:600;color:var(--a);transition:color .4s}
+.copy{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.94rem;line-height:1.84;color:var(--dim);
+  hyphens:none;transition:color .4s;
+}
+.rule{width:100%;height:1px;background:var(--line);margin:0;transition:background .4s}
+
+/* ─────────────────────────────────────────────
+   STATEMENT — replaces Mission band + Prologue
+   One clean full-width introduction after hero.
+   Saga pattern: large editorial statement, then numbers.
+───────────────────────────────────────────── */
+#statement{
+  padding:var(--sp) var(--gutter);
+  border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;
+  background:var(--panel);
+  transition:background .5s,border-color .4s;
+}
+.st-left{}
+.st-quote{
+  font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:200;
+  font-size:clamp(1.6rem,3.2vw,3rem);line-height:1.22;
+  color:var(--fg);hyphens:none;
+  padding-left:28px;border-left:2px solid var(--a);
+  transition:color .4s,border-color .4s;
+}
+.st-body{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.96rem;line-height:1.84;color:var(--dim);
+  margin-top:24px;hyphens:none;transition:color .4s;
+}
+.st-numbers{
+  display:grid;grid-template-columns:1fr 1fr;gap:2px;
+}
+.st-num{
+  background:var(--card);border:1px solid var(--line);
+  padding:28px 26px;
+  transition:background .5s,border-color .4s;
+}
+.st-n{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:2.6rem;line-height:1;color:var(--fg);
+  margin-bottom:5px;transition:color .4s;
+}
+.st-l{
+  font-family:'Share Tech Mono',monospace;font-size:.48rem;
+  color:var(--faint);letter-spacing:.14em;text-transform:uppercase;
+  transition:color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   PHOTO STRIP
+   Reduced height, higher contrast, cleaner labels.
+───────────────────────────────────────────── */
+.pb{
+  display:grid;grid-template-columns:2fr 1fr 1fr;
+  height:360px;
+  border-bottom:1px solid var(--line);
+  transition:border-color .4s;
+}
+.pb-cell{position:relative;overflow:hidden;border-right:1px solid var(--line);transition:border-color .4s}
+.pb-cell:last-child{border-right:none}
+.pb-cell img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.4) brightness(.5) contrast(1.12);
+  transition:transform .9s ease,filter .6s;
+}
+[data-theme="light"] .pb-cell img{filter:saturate(.35) brightness(.62) sepia(.14)}
+.pb-cell:hover img{transform:scale(1.06);filter:saturate(.75) brightness(.68)}
+[data-theme="light"] .pb-cell:hover img{filter:saturate(.6) brightness(.76) sepia(.08)}
+.pb-lbl{
+  position:absolute;bottom:14px;left:14px;
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:rgba(255,255,255,.6);letter-spacing:.18em;text-transform:uppercase;
+  background:rgba(0,0,0,.5);padding:3px 8px;backdrop-filter:blur(6px);
+}
+
+/* ─────────────────────────────────────────────
+   STUDIOS — replaces Verticals table
+   Saga pattern: project-list style, full horizontal rows,
+   each row a clear unit. Three equal columns per row.
+───────────────────────────────────────────── */
+#studios{
+  border-bottom:1px solid var(--line);
+  transition:border-color .4s;
+}
+.studios-hdr{
+  padding:var(--sp) var(--gutter) 48px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+}
+.studios-note{
+  font-family:'Share Tech Mono',monospace;font-size:.5rem;
+  color:var(--faint);letter-spacing:.12em;
+  text-align:right;line-height:2;transition:color .4s;
+}
+.studio-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--line);
+  text-decoration:none;color:inherit;
+  transition:background .25s,border-color .4s;
+}
+.studio-row:hover{background:var(--card)}
+.studio-row:hover .sr-arr{transform:translateX(6px);color:var(--a)}
+.sr-cell{
+  padding:44px var(--gutter);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  min-width:0;
+  transition:border-color .4s;
+}
+.sr-cell:last-child{border-right:none}
+.sr-idx{
+  font-family:'Share Tech Mono',monospace;font-size:.48rem;
+  color:var(--a);letter-spacing:.2em;margin-bottom:18px;
+  transition:color .4s;
+}
+.sr-name{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(1.8rem,2.4vw,2.8rem);
+  text-transform:uppercase;letter-spacing:.06em;line-height:.96;
+  color:var(--fg);hyphens:none;overflow-wrap:break-word;
+  transition:color .4s;
+}
+.sr-name b{font-weight:600;color:var(--a);transition:color .4s}
+.sr-role{
+  font-family:'Share Tech Mono',monospace;font-size:.48rem;
+  color:var(--a);letter-spacing:.14em;text-transform:uppercase;
+  margin-top:10px;transition:color .4s;
+}
+.sr-copy{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.84rem;line-height:1.78;color:var(--dim);
+  margin-top:16px;hyphens:none;overflow-wrap:break-word;
+  transition:color .4s;
+}
+.sr-tags{display:flex;flex-direction:column;gap:5px;margin-top:auto;padding-top:20px}
+.sr-tag{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line);padding:4px 9px;display:inline-block;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:all .4s;
+}
+.sr-arr{
+  font-family:'Share Tech Mono',monospace;font-size:.5rem;
+  color:var(--faint);letter-spacing:.2em;
+  margin-top:auto;padding-top:14px;
+  transition:transform .22s,color .22s;
+}
+
+/* ─────────────────────────────────────────────
+   NUMBERS — replaces Telemetry band
+   Cleaner, more spacious, fewer data labels.
+───────────────────────────────────────────── */
+#numbers{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  transition:background .5s,border-color .4s;
+}
+.nb{
+  padding:52px var(--gutter);
+  border-right:1px solid var(--line);
+  transition:border-color .4s;
+}
+.nb:last-child{border-right:none}
+.nb-val{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(2.4rem,4vw,3.6rem);line-height:1;
+  color:var(--fg);margin-bottom:10px;transition:color .4s;
+}
+.nb-lbl{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.84rem;color:var(--dim);line-height:1.6;
+  transition:color .4s;
+}
+.nb-sub{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.12em;
+  margin-top:5px;transition:color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   ORBIT — replaces Diagram section
+   Saga pattern: full-bleed visual with clean text overlay.
+   SVG ecosystem diagram as the primary visual,
+   short explanatory copy alongside it.
+───────────────────────────────────────────── */
+#orbit{
+  padding:var(--sp) var(--gutter);
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:72px;align-items:center;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  transition:background .5s,border-color .4s;
+}
+.orbit-svg-wrap{display:flex;justify-content:center;align-items:center}
+.orbit-svg-wrap svg{width:100%;max-width:420px;height:auto}
+.orbit-copy{}
+.orbit-items{display:flex;flex-direction:column;gap:2px;margin-top:32px}
+.oi{
+  border:1px solid var(--line);padding:18px 22px;
+  display:flex;align-items:baseline;gap:14px;
+  transition:border-color .28s,background .4s;
+}
+.oi:hover{border-color:var(--line2);background:var(--card)}
+.oi-n{
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--a);letter-spacing:.18em;flex-shrink:0;transition:color .4s;
+}
+.oi-t{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:1rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--fg);transition:color .4s;
+}
+.oi-s{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.78rem;line-height:1.72;color:var(--dim);
+  margin-top:4px;hyphens:none;transition:color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   PARTNERS — space agencies
+   Saga pattern: horizontal strip, greyscale logos.
+───────────────────────────────────────────── */
+#partners{
+  padding:64px var(--gutter);
+  border-bottom:1px solid var(--line);
+  transition:border-color .4s;
+}
+.partners-intro{
+  font-family:'Share Tech Mono',monospace;font-size:.5rem;
+  color:var(--faint);letter-spacing:.26em;text-transform:uppercase;
+  text-align:center;margin-bottom:44px;transition:color .4s;
+}
+.partners-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:52px;flex-wrap:wrap;
+}
+.ag{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  opacity:.32;filter:grayscale(1);
+  transition:opacity .3s,filter .3s;
+}
+.ag:hover{opacity:.9;filter:grayscale(0)}
+.ag svg{height:34px;width:auto}
+.ag-n{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.2em;transition:color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   MARKET — merges old Market + Values sections
+   Two-part: left = sector thesis, right = five levers.
+   Saga pattern: information dense but cleanly separated.
+───────────────────────────────────────────── */
+#market{
+  padding:var(--sp) var(--gutter);
+  border-bottom:1px solid var(--line);
+  transition:border-color .4s;
+}
+.market-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:2px;margin-top:48px;
+}
+.mk{
+  background:var(--panel);border:1px solid var(--line);
+  padding:36px 32px;min-width:0;
+  transition:border-color .28s,background .5s;
+}
+.mk:hover{border-color:var(--line2)}
+.mk-n{
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--faint);letter-spacing:.2em;margin-bottom:22px;
+  transition:color .4s;
+}
+.mk-h{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:1.55rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--fg);margin-bottom:12px;line-height:1.08;
+  hyphens:none;transition:color .4s;
+}
+.mk-body{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.84rem;line-height:1.8;color:var(--dim);
+  hyphens:none;transition:color .4s;
+}
+.mk-status{
+  display:flex;align-items:center;gap:7px;margin-top:20px;
+  font-family:'Share Tech Mono',monospace;font-size:.48rem;
+  color:var(--a3);letter-spacing:.15em;transition:color .4s;
+}
+.mk-dot{width:5px;height:5px;background:var(--a3);border-radius:50%;animation:bk 2s infinite;transition:background .4s}
+
+/* ─────────────────────────────────────────────
+   EVIDENCE — merges Case Study + Extreme Environments
+   Saga pattern: project detail style with real data.
+   Single clean section, not two fragmented ones.
+───────────────────────────────────────────── */
+#evidence{
+  padding:var(--sp) var(--gutter);
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:start;
+  transition:background .5s,border-color .4s;
+}
+.ev-left{}
+.ev-h{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(1.4rem,2.6vw,2.4rem);line-height:1.18;
+  color:var(--fg);margin-top:18px;hyphens:none;
+  transition:color .4s;
+}
+.ev-h em{color:var(--a);font-style:italic}
+.ev-body{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.88rem;line-height:1.84;color:var(--dim);
+  margin-top:18px;hyphens:none;transition:color .4s;
+}
+.ev-stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:24px}
+.ev-stat{
+  background:var(--card);border:1px solid var(--line);
+  padding:20px 22px;
+  transition:background .5s,border-color .4s;
+}
+.ev-sv{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:2rem;line-height:1;color:var(--a);
+  margin-bottom:4px;transition:color .4s;
+}
+.ev-sl{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.12em;text-transform:uppercase;
+  transition:color .4s;
+}
+.ev-source{
+  font-family:'Share Tech Mono',monospace;font-size:.42rem;
+  color:var(--faint);letter-spacing:.1em;margin-top:14px;
+  transition:color .4s;
+}
+.ev-right{}
+.ev-envs{display:flex;flex-direction:column;gap:2px;margin-top:38px}
+.ev-env{
+  background:var(--card);border:1px solid var(--line);
+  padding:22px 24px;
+  transition:border-color .28s,background .5s;
+}
+.ev-env:hover{border-color:var(--line2)}
+.ev-en{
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--a);letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:8px;transition:color .4s;
+}
+.ev-eh{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:1.05rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--fg);transition:color .4s;
+}
+.ev-points{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.ev-points li{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.78rem;line-height:1.65;color:var(--dim);
+  display:flex;gap:8px;align-items:baseline;
+  hyphens:none;transition:color .4s;
+}
+.ev-points li::before{
+  content:'→';font-family:'Share Tech Mono',monospace;
+  font-size:.52rem;color:var(--a);flex-shrink:0;transition:color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   INVEST — kept, but stripped
+   Left: thesis. Right: metrics only. No rows.
+───────────────────────────────────────────── */
+#invest{
+  padding:var(--sp) var(--gutter);
+  border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;
+  transition:border-color .4s;
+}
+.inv-h{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(1.4rem,2.8vw,2.6rem);line-height:1.18;
+  color:var(--fg);margin-top:18px;hyphens:none;transition:color .4s;
+}
+.inv-h em{color:var(--a);font-style:italic}
+.inv-body{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.9rem;line-height:1.84;color:var(--dim);
+  margin-top:16px;hyphens:none;transition:color .4s;
+}
+.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.iv{
+  background:var(--panel);border:1px solid var(--line);
+  padding:28px 24px;
+  transition:background .5s,border-color .4s;
+}
+.iv-v{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:2.2rem;line-height:1;color:var(--fg);
+  margin-bottom:5px;transition:color .4s;
+}
+.iv-l{
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--faint);letter-spacing:.13em;text-transform:uppercase;
+  transition:color .4s;
+}
+.inv-uses{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:2px}
+.iu{
+  background:var(--panel);border:1px solid var(--line);
+  padding:18px 20px;
+  transition:background .5s,border-color .4s;
+}
+.iu:hover{border-color:var(--line2)}
+.iu-n{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--a);letter-spacing:.16em;margin-bottom:5px;transition:color .4s;
+}
+.iu-t{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:.92rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--fg);transition:color .4s;
+}
+.iu-s{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.75rem;line-height:1.7;color:var(--dim);
+  margin-top:3px;hyphens:none;transition:color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   MISSION LOG — gamification
+───────────────────────────────────────────── */
+#log{
+  padding:var(--sp) var(--gutter);
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  transition:background .5s,border-color .4s;
+}
+.log-hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:44px}
+.log-prog{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.log-prog-lbl{
+  font-family:'Share Tech Mono',monospace;font-size:.48rem;
+  color:var(--faint);letter-spacing:.2em;transition:color .4s;
+}
+.log-track{width:200px;height:2px;background:var(--line);border-radius:1px;transition:background .4s}
+.log-fill{height:100%;width:0%;background:var(--a);border-radius:1px;transition:width .6s ease,background .4s}
+.log-pct{
+  font-family:'Share Tech Mono',monospace;font-size:.62rem;
+  color:var(--a);letter-spacing:.13em;transition:color .4s;
+}
+.log-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.log-node{
+  background:var(--card);border:1px solid var(--line);
+  padding:20px 18px;
+  display:flex;flex-direction:column;gap:9px;
+  position:relative;overflow:hidden;
+  transition:background .5s,border-color .4s;
+}
+.log-node.unlocked{border-color:var(--a-d)}
+.log-node.done{border-color:var(--a);background:var(--a-f)}
+.log-node.done .log-check{opacity:1}
+.log-ni{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.18em;transition:color .4s;
+}
+.log-node.unlocked .log-ni,.log-node.done .log-ni{color:var(--a)}
+.log-nn{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:.88rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--dim);line-height:1.1;transition:color .4s;
+}
+.log-node.unlocked .log-nn,.log-node.done .log-nn{color:var(--fg)}
+.log-check{
+  position:absolute;top:10px;right:10px;
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--a);opacity:0;transition:opacity .4s,color .4s;
+}
+.log-cta{margin-top:36px;text-align:center}
+.log-msg{
+  font-family:'Share Tech Mono',monospace;font-size:.54rem;
+  color:var(--faint);letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:18px;transition:color .4s;
+}
+.log-msg.on{color:var(--a3)}
+
+/* ─────────────────────────────────────────────
+   JOURNAL — articles
+───────────────────────────────────────────── */
+#journal{
+  padding:var(--sp) var(--gutter);
+  border-bottom:1px solid var(--line);
+  transition:border-color .4s;
+}
+.j-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2px;margin-top:48px;
+}
+.j-card{
+  background:var(--panel);border:1px solid var(--line);
+  text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:border-color .28s,background .4s;min-width:0;
+}
+.j-card:hover{border-color:var(--line2)}
+.j-card:hover .j-img img{transform:scale(1.04);filter:saturate(.75) brightness(.72)}
+.j-card:hover .j-arr{transform:translateX(5px);color:var(--a)}
+.j-card.lead{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+.j-img{position:relative;overflow:hidden;aspect-ratio:16/9;flex-shrink:0}
+.j-card.lead .j-img{aspect-ratio:auto;min-height:320px}
+.j-img img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.45) brightness(.6) contrast(1.1);
+  transition:transform .8s ease,filter .5s;
+}
+[data-theme="light"] .j-img img{filter:saturate(.4) brightness(.72) sepia(.1)}
+.j-img::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(to bottom,transparent 55%,var(--panel) 100%),
+    repeating-linear-gradient(90deg,transparent,transparent 48px,var(--line) 48px,var(--line) 49px),
+    repeating-linear-gradient(0deg,transparent,transparent 48px,var(--line) 48px,var(--line) 49px);
+  opacity:.5;pointer-events:none;transition:background .4s;
+}
+.j-card.lead .j-img::after{
+  background:
+    linear-gradient(to right,transparent 55%,var(--panel) 100%),
+    repeating-linear-gradient(90deg,transparent,transparent 48px,var(--line) 48px,var(--line) 49px),
+    repeating-linear-gradient(0deg,transparent,transparent 48px,var(--line) 48px,var(--line) 49px);
+}
+.j-badge{
+  position:absolute;top:14px;left:14px;z-index:2;
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--a);letter-spacing:.2em;
+  background:var(--card);border:1px solid var(--a-d);
+  padding:3px 9px;transition:color .4s,background .4s;
+}
+.j-time{
+  position:absolute;bottom:14px;right:14px;z-index:2;
+  font-family:'Share Tech Mono',monospace;font-size:.42rem;
+  color:rgba(255,255,255,.5);letter-spacing:.13em;
+  background:rgba(0,0,0,.44);padding:3px 8px;backdrop-filter:blur(5px);
+}
+.j-body{
+  padding:28px 30px 32px;
+  display:flex;flex-direction:column;flex:1;min-width:0;
+}
+.j-tag{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--a);letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:12px;display:flex;align-items:center;gap:7px;
+  transition:color .4s;
+}
+.j-tag::before{content:'';width:10px;height:1px;background:var(--a)}
+.j-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:clamp(1.15rem,1.9vw,1.7rem);
+  text-transform:uppercase;letter-spacing:.05em;line-height:1.06;
+  color:var(--fg);hyphens:none;overflow-wrap:break-word;
+  transition:color .4s;
+}
+.j-card.lead .j-title{font-size:clamp(1.5rem,2.6vw,2.4rem)}
+.j-exc{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.82rem;line-height:1.78;color:var(--dim);
+  margin-top:12px;hyphens:none;overflow-wrap:break-word;
+  transition:color .4s;
+}
+.j-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:auto;padding-top:20px;
+  border-top:1px solid var(--line);transition:border-color .4s;
+}
+.j-date{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.13em;transition:color .4s;
+}
+.j-arr{
+  font-family:'Share Tech Mono',monospace;font-size:.54rem;
+  color:var(--a);display:flex;align-items:center;gap:5px;
+  transition:transform .22s,color .4s;
+}
+.j-infographic{width:100%;height:100%;position:absolute;inset:0;z-index:1;pointer-events:none}
+
+/* ─────────────────────────────────────────────
+   CTA — cleaner, more focused
+   Saga pattern: single large statement, email + primary action.
+───────────────────────────────────────────── */
+#cta{
+  padding:var(--sp) var(--gutter);
+  background:var(--panel);
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:80px;
+  position:relative;overflow:hidden;
+  transition:background .5s,border-color .4s;
+}
+#cta::before{
+  content:'';position:absolute;top:-240px;right:-240px;
+  width:640px;height:640px;border-radius:50%;
+  background:radial-gradient(circle,var(--a-f) 0%,transparent 65%);
+  pointer-events:none;
+}
+.cta-left{}
+.cta-eye{
+  font-family:'Share Tech Mono',monospace;font-size:.5rem;
+  color:var(--a);letter-spacing:.28em;text-transform:uppercase;
+  margin-bottom:18px;display:flex;align-items:center;gap:8px;
+  transition:color .4s;
+}
+.cta-eye::before{content:'';width:12px;height:1px;background:var(--a)}
+.cta-h{
+  font-family:'Barlow Condensed',sans-serif;font-weight:200;
+  font-size:clamp(2.6rem,5vw,5.4rem);
+  text-transform:uppercase;letter-spacing:.04em;
+  line-height:.9;color:var(--fg);margin-bottom:22px;
+  hyphens:none;transition:color .4s;
+}
+.cta-h b{font-weight:600;color:var(--a);transition:color .4s}
+.cta-sub{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.92rem;line-height:1.82;color:var(--dim);
+  max-width:380px;hyphens:none;transition:color .4s;
+}
+.cta-right{display:flex;flex-direction:column;gap:2px}
+.cta-item{
+  cursor:none;background:var(--card);border:1px solid var(--line);
+  padding:22px 26px;text-decoration:none;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:border-color .22s,background .22s;
+}
+.cta-item:hover{border-color:var(--a);background:var(--a-f)}
+.cta-il{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:.98rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--fg);transition:color .4s;
+}
+.cta-is{
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--faint);letter-spacing:.12em;margin-top:3px;transition:color .4s;
+}
+.cta-ia{
+  font-family:'Share Tech Mono',monospace;font-size:.6rem;
+  color:var(--a);flex-shrink:0;transition:transform .22s,color .4s;
+}
+.cta-item:hover .cta-ia{transform:translateX(5px)}
+.cta-quote{
+  grid-column:1/-1;
+  margin-top:52px;border-top:1px solid var(--line);padding-top:40px;
+  font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:200;
+  font-size:clamp(1.1rem,2vw,1.8rem);
+  line-height:1.38;color:var(--dim);text-align:center;
+  hyphens:none;transition:color .4s,border-color .4s;
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER — Saga pattern: two-column, address left,
+   links right, email + social at bottom.
+   No cramped single-line footer.
+───────────────────────────────────────────── */
+footer{
+  background:var(--panel);
+  border-top:1px solid var(--line);
+  padding:64px var(--gutter) 40px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:48px;
+  transition:background .5s,border-color .4s;
+}
+.ft-brand{}
+.ft-logo{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:1.1rem;letter-spacing:.3em;
+  color:var(--fg);display:block;margin-bottom:16px;
+  transition:color .4s;
+}
+.ft-tagline{
+  font-family:'Barlow',sans-serif;font-weight:300;
+  font-size:.82rem;line-height:1.72;color:var(--dim);
+  max-width:240px;hyphens:none;transition:color .4s;
+}
+.ft-contact{margin-top:20px}
+.ft-email{
+  font-family:'Share Tech Mono',monospace;font-size:.5rem;
+  color:var(--a);letter-spacing:.14em;text-decoration:none;
+  transition:color .2s;
+}
+.ft-email:hover{color:var(--fg)}
+.ft-col-lbl{
+  font-family:'Share Tech Mono',monospace;font-size:.46rem;
+  color:var(--faint);letter-spacing:.24em;text-transform:uppercase;
+  margin-bottom:16px;display:block;transition:color .4s;
+}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ft-links a{
+  font-family:'Barlow Condensed',sans-serif;font-weight:300;
+  font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;
+  transition:color .2s;
+}
+.ft-links a:hover{color:var(--fg)}
+.ft-bottom{
+  grid-column:1/-1;
+  margin-top:40px;padding-top:20px;
+  border-top:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:border-color .4s;
+}
+.ft-copy{
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.13em;transition:color .4s;
+}
+.ft-theme{
+  cursor:none;background:none;border:none;padding:0;
+  font-family:'Share Tech Mono',monospace;font-size:.44rem;
+  color:var(--faint);letter-spacing:.14em;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;transition:color .2s;
+}
+.ft-theme:hover{color:var(--a)}
+
+/* ─────────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────────── */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .72s ease,transform .72s ease}
+.rv.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.08s}.d2{transition-delay:.17s}
+.d3{transition-delay:.26s}.d4{transition-delay:.36s}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media(max-width:1100px){
+  :root{--gutter:24px;--sp:64px;--sp-sm:44px}
+  .n-links{display:none}
+  #statement,#evidence,#invest,#cta{grid-template-columns:1fr;gap:0}
+  #statement>.st-right,#orbit{grid-template-columns:1fr}
+  #orbit{gap:40px}
+  .st-numbers,.inv-grid,.inv-uses{grid-template-columns:1fr 1fr}
+  .studio-row{grid-template-columns:1fr}
+  .sr-cell{border-right:none;border-bottom:1px solid var(--line)}
+  .sr-cell:last-child{border-bottom:none}
+  #numbers{grid-template-columns:1fr 1fr}
+  .pb{grid-template-columns:1fr;height:auto}
+  .pb-cell{height:180px}
+  .market-grid{grid-template-columns:1fr}
+  .j-grid{grid-template-columns:1fr}
+  .j-card.lead{grid-template-columns:1fr}
+  .j-card.lead .j-img{min-height:200px}
+  .j-card.lead .j-img::after{background:linear-gradient(to bottom,transparent 55%,var(--panel) 100%),repeating-linear-gradient(90deg,transparent,transparent 48px,var(--line) 48px,var(--line) 49px),repeating-linear-gradient(0deg,transparent,transparent 48px,var(--line) 48px,var(--line) 49px)}
+  #cta{grid-template-columns:1fr}
+  .cta-quote{margin-top:36px}
+  footer{grid-template-columns:1fr 1fr}
+  .ft-bottom{flex-direction:column;gap:12px;align-items:flex-start}
+  .log-grid{grid-template-columns:repeat(4,1fr)}
+  .ev-stats,.ev-grid{grid-template-columns:1fr}
+  .studios-hdr{flex-direction:column;gap:16px;align-items:flex-start}
+}
+@media(max-width:640px){
+  h1{font-size:clamp(3.6rem,14vw,6rem)}
+  .log-grid{grid-template-columns:repeat(2,1fr)}
+  .st-numbers{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cr">
+  <svg viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 1.5 C10.2 4.5 8.5 9.5 8.5 15 L13 18 L17.5 15 C17.5 9.5 15.8 4.5 13 1.5Z" fill="var(--a)" opacity=".9"/>
+    <path d="M13 1.5 C11.7 4.5 10.8 9.5 10.8 15 L13 18 L13 1.5Z" fill="white" opacity=".11"/>
+    <circle cx="13" cy="10.5" r="1.8" fill="var(--bg)" stroke="var(--faint)" stroke-width=".5" opacity=".85"/>
+    <path d="M8.5 15 L5.5 19.5 L8.5 18Z" fill="var(--a)" opacity=".72"/>
+    <path d="M17.5 15 L20.5 19.5 L17.5 18Z" fill="var(--a)" opacity=".72"/>
+    <g class="xflame" transform-origin="13 18">
+      <path d="M10.5 18 Q12 22.5 13 21 Q14 22.5 15.5 18" fill="var(--a2)" opacity=".82"/>
+    </g>
+  </svg>
+</div>
+
+<canvas id="sf"></canvas>
+<div id="hud"><div class="hc tl"></div><div class="hc tr"></div><div class="hc bl"></div><div class="hc br"></div></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#" class="n-logo">
+    <div class="n-dot"></div>ETHRA
+  </a>
+  <ul class="n-links">
+    <li><a href="#studios">Studios</a></li>
+    <li><a href="#orbit">Ecosystem</a></li>
+    <li><a href="#market">Market</a></li>
+    <li><a href="#invest">Invest</a></li>
+    <li><a href="#journal">Journal</a></li>
+  </ul>
+  <div class="n-right">
+    <a href="#cta" class="n-cta">Get in touch →</a>
+    <button class="n-theme" onclick="toggleTheme()" id="ntheme" aria-label="Toggle theme">☀️</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="h-bg"></div>
+
+  <svg class="h-orb" viewBox="0 0 560 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="280" cy="280" r="270" stroke="currentColor" stroke-width=".5" stroke-dasharray="4 9" opacity=".6"/>
+    <circle cx="280" cy="280" r="208" stroke="currentColor" stroke-width=".4" stroke-dasharray="2 12" opacity=".5"/>
+    <circle cx="280" cy="280" r="148" stroke="currentColor" stroke-width=".65" opacity=".72"/>
+    <circle cx="280" cy="280" r="88"  stroke="currentColor" stroke-width=".32" stroke-dasharray="1 7" opacity=".5"/>
+    <circle cx="280" cy="280" r="40"  stroke="currentColor" stroke-width=".5" opacity=".62"/>
+    <circle cx="280" cy="280" r="12"  fill="currentColor" opacity=".12"/>
+    <line x1="0" y1="280" x2="560" y2="280" stroke="currentColor" stroke-width=".24" opacity=".28"/>
+    <line x1="280" y1="0" x2="280" y2="560" stroke="currentColor" stroke-width=".24" opacity=".28"/>
+    <circle cx="550" cy="280" r="5" fill="currentColor" opacity=".88"/>
+    <circle cx="280" cy="10"  r="3.5" fill="orange" opacity=".92"/>
+  </svg>
+
+  <div class="h-body">
+    <div class="h-kicker">ETHRA · Discovery Brief · 2026</div>
+    <h1>
+      Human<br>
+      <span class="ac">Habitat</span><br>
+      Design
+    </h1>
+    <div class="h-sub">
+      Terrestrial<span class="sep">·</span>Extreme<span class="sep">·</span>Extraterrestrial
+    </div>
+    <p class="h-desc">
+      A luxury interior studio, a space habitat lab, and a design institute. Three studios. One cultural posture. Designing the environments humans inhabit now, and the ones they will inhabit next.
+    </p>
+    <div class="h-actions">
+      <a href="#studios" class="btn fill">Explore the Studios <span class="ar">→</span></a>
+      <a href="#statement" class="btn">Our Approach <span class="ar">→</span></a>
+    </div>
+  </div>
+
+  <div class="h-scroll"><div class="h-scroll-line"></div>SCROLL</div>
+</section>
+
+<!-- ═══ STATEMENT ═══ -->
+<section id="statement">
+  <div class="rv">
+    <div class="sec-label">The House</div>
+    <blockquote class="st-quote">
+      A room is a climate. A building, a biography. A habitat, the quiet condition under which life flourishes.
+    </blockquote>
+    <p class="st-body">
+      ETHRA is a design house operating across two frontiers. On Earth, we compose luxury interiors that function as inhabited artworks. Beyond it, we research and prototype the human-centric habitat systems that spaceflight demands. The Institute connects both through education and published research.
+    </p>
+    <div style="margin-top:28px">
+      <a href="#studios" class="btn">Meet the studios <span class="ar">→</span></a>
+    </div>
+  </div>
+  <div class="rv d1">
+    <div class="st-numbers">
+      <div class="st-num"><div class="st-n">03</div><div class="st-l">Studios under one roof</div></div>
+      <div class="st-num"><div class="st-n">02</div><div class="st-l">Worlds — Earth and orbital</div></div>
+      <div class="st-num"><div class="st-n">∞</div><div class="st-l">Cultural reference layers</div></div>
+      <div class="st-num"><div class="st-n">Y2/Y3</div><div class="st-l">Projected break even</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PHOTO STRIP ═══ -->
+<div class="pb">
+  <div class="pb-cell">
+    <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&q=80" alt="Earth from ISS" loading="lazy">
+    <div class="pb-lbl">ISS · Low Earth Orbit · 408 km</div>
+  </div>
+  <div class="pb-cell">
+    <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=600&q=80" alt="Lunar surface" loading="lazy">
+    <div class="pb-lbl">Lunar Surface · Analog Study</div>
+  </div>
+  <div class="pb-cell">
+    <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=600&q=80" alt="Deep space" loading="lazy">
+    <div class="pb-lbl">Deep Field · Hubble · NASA / ESA</div>
+  </div>
+</div>
+
+<!-- ═══ STUDIOS ═══ -->
+<section id="studios">
+  <div class="studios-hdr">
+    <div>
+      <div class="sec-label rv">The Three Studios</div>
+      <div class="h2 rv d1">Three <b>Systems</b></div>
+    </div>
+    <div class="studios-note rv">Each studio earns its own keep.<br>Together they compound.</div>
+  </div>
+
+  <a href="#" class="studio-row rv">
+    <div class="sr-cell">
+      <div class="sr-idx">01 · Studio</div>
+      <div class="sr-name">ETHRA <b>Studio</b></div>
+      <div class="sr-role">Luxury Interior Architecture</div>
+      <div class="sr-arr">COMMISSION A PROJECT →</div>
+    </div>
+    <div class="sr-cell">
+      <p class="sr-copy">Interiors composed as inhabited artworks. Bespoke environments for high net worth residences, hospitality, and cultural institutions. Each project is a singular cultural statement anchored in research and material intelligence. Where atmosphere becomes architecture.</p>
+      <div class="sr-tags" style="margin-top:20px">
+        <span class="sr-tag">HNW Residences</span>
+        <span class="sr-tag">Hospitality</span>
+        <span class="sr-tag">Cultural Institutions</span>
+      </div>
+    </div>
+    <div class="sr-cell" style="background:var(--card)">
+      <div class="sr-idx" style="margin-bottom:10px">USE CASES</div>
+      <p class="sr-copy">A private villa where thermal mass systems borrowed from polar station research eliminate mechanical cooling. A cultural foundation whose galleries use circadian lighting protocols derived from ISS crew wellbeing studies.</p>
+    </div>
+  </a>
+
+  <a href="#" class="studio-row rv d1">
+    <div class="sr-cell">
+      <div class="sr-idx">02 · Lab</div>
+      <div class="sr-name">ETHRA <b>Habitat Lab</b></div>
+      <div class="sr-role">Extreme and Space Habitat R&amp;D</div>
+      <div class="sr-arr">PARTNER ON RESEARCH →</div>
+    </div>
+    <div class="sr-cell">
+      <p class="sr-copy">Human-centric systems for orbital and extreme environments. Concept design, prototyping, and habitability frameworks for conditions that do not yet exist at scale. Partnering with agencies and aerospace companies to build the interior science of spaceflight.</p>
+      <div class="sr-tags" style="margin-top:20px">
+        <span class="sr-tag">Space Agencies</span>
+        <span class="sr-tag">Aerospace</span>
+        <span class="sr-tag">Research Institutions</span>
+      </div>
+    </div>
+    <div class="sr-cell" style="background:var(--card)">
+      <div class="sr-idx" style="margin-bottom:10px">USE CASES</div>
+      <p class="sr-copy">Habitability framework for a private orbital station. Acoustic and spatial design for a polar research station. Closed-loop material systems for a deep desert research outpost operating without resupply.</p>
+    </div>
+  </a>
+
+  <a href="#" class="studio-row rv d2">
+    <div class="sr-cell">
+      <div class="sr-idx">03 · Institute</div>
+      <div class="sr-name">ETHRA <b>Institute</b></div>
+      <div class="sr-role">Education and Thought Leadership</div>
+      <div class="sr-arr">JOIN THE COHORT →</div>
+    </div>
+    <div class="sr-cell">
+      <p class="sr-copy">A platform for designers, researchers, and institutions. Programmes, workshops, and publications that scale ETHRA's philosophy globally. Knowledge published as practice. Building the next generation of habitat designers who work across Earth and space alike.</p>
+      <div class="sr-tags" style="margin-top:20px">
+        <span class="sr-tag">Designers</span>
+        <span class="sr-tag">Researchers</span>
+        <span class="sr-tag">Universities</span>
+      </div>
+    </div>
+    <div class="sr-cell" style="background:var(--card)">
+      <div class="sr-idx" style="margin-bottom:10px">USE CASES</div>
+      <p class="sr-copy">Annual habitat design programme with a partner university. A research framework on human factors in extreme residential environments. A workshop series bridging luxury architects and aerospace engineers for the first time.</p>
+    </div>
+  </a>
+</section>
+
+<!-- ═══ NUMBERS ═══ -->
+<div id="numbers">
+  <div class="nb rv">
+    <div class="nb-val">$bn+</div>
+    <div class="nb-lbl">Luxury interior design market</div>
+    <div class="nb-sub">GLOBAL · HIGH DEMAND · GROWING</div>
+  </div>
+  <div class="nb rv d1">
+    <div class="nb-val">↑∞</div>
+    <div class="nb-lbl">Space economy trajectory</div>
+    <div class="nb-sub">GOV + PRIVATE CAPITAL CONVERGING</div>
+  </div>
+  <div class="nb rv d2">
+    <div class="nb-val">×3</div>
+    <div class="nb-lbl">Revenue streams from day one</div>
+    <div class="nb-sub">SERVICES · IP · EDUCATION</div>
+  </div>
+  <div class="nb rv d3">
+    <div class="nb-val">Y2/Y3</div>
+    <div class="nb-lbl">Projected break even</div>
+    <div class="nb-sub">DIVERSIFIED CASHFLOW MODEL</div>
+  </div>
+</div>
+
+<!-- ═══ ORBIT / ECOSYSTEM ═══ -->
+<section id="orbit">
+  <div class="orbit-svg-wrap rv">
+    <svg viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="210" cy="210" r="188" stroke="var(--line2)" stroke-width=".7" stroke-dasharray="5 7"/>
+      <circle cx="210" cy="210" r="130" stroke="var(--line)" stroke-width=".6"/>
+      <circle cx="210" cy="210" r="68"  stroke="var(--a-d)" stroke-width=".9"/>
+      <circle cx="210" cy="210" r="28"  fill="var(--a-f)" stroke="var(--a)" stroke-width=".9"/>
+      <text x="210" y="206" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="6" fill="var(--a)" letter-spacing="1.5">ETHRA</text>
+      <text x="210" y="216" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--faint)" letter-spacing="1">CORE</text>
+      <line x1="0" y1="210" x2="420" y2="210" stroke="var(--line)" stroke-width=".26"/>
+      <line x1="210" y1="0" x2="210" y2="420" stroke="var(--line)" stroke-width=".26"/>
+      <circle cx="210" cy="22" r="24" fill="var(--card)" stroke="var(--a)" stroke-width=".9"/>
+      <text x="210" y="19" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5.5" fill="var(--a)" letter-spacing=".8">STUDIO</text>
+      <text x="210" y="29" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4" fill="var(--faint)" letter-spacing=".6">LUXURY</text>
+      <line x1="210" y1="46" x2="210" y2="142" stroke="var(--a-d)" stroke-width=".7" stroke-dasharray="3 4"/>
+      <circle cx="350" cy="300" r="24" fill="var(--card)" stroke="var(--a)" stroke-width=".9"/>
+      <text x="350" y="297" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5.5" fill="var(--a)" letter-spacing=".8">LAB</text>
+      <text x="350" y="307" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4" fill="var(--faint)" letter-spacing=".5">SPACE</text>
+      <line x1="328" y1="281" x2="272" y2="252" stroke="var(--a-d)" stroke-width=".7" stroke-dasharray="3 4"/>
+      <circle cx="70" cy="300" r="24" fill="var(--card)" stroke="var(--a)" stroke-width=".9"/>
+      <text x="70" y="297" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="5" fill="var(--a)" letter-spacing=".5">INST.</text>
+      <text x="70" y="307" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4" fill="var(--faint)" letter-spacing=".5">EDU</text>
+      <line x1="92" y1="281" x2="148" y2="252" stroke="var(--a-d)" stroke-width=".7" stroke-dasharray="3 4"/>
+      <text x="210" y="8"   text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--faint)" letter-spacing="1">EARTH</text>
+      <text x="408" y="160" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--faint)" letter-spacing="1" transform="rotate(90 408 160)">ORBIT</text>
+      <text x="12" y="160" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--faint)" letter-spacing="1" transform="rotate(-90 12 160)">KNOWLEDGE</text>
+      <text x="210" y="416" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="4.5" fill="var(--faint)" letter-spacing="1">SUSTAINABILITY</text>
+      <circle r="3.8" fill="var(--a)" opacity=".85">
+        <animateMotion dur="8s" repeatCount="indefinite"><mpath href="#op1"/></animateMotion>
+      </circle>
+      <circle r="2.8" fill="var(--a2)" opacity=".75">
+        <animateMotion dur="13s" repeatCount="indefinite" begin="-5s"><mpath href="#op2"/></animateMotion>
+      </circle>
+      <path id="op1" d="M 210 22 A 188 188 0 1 1 209.99 22" fill="none"/>
+      <path id="op2" d="M 210 80 A 130 130 0 1 0 209.99 80" fill="none"/>
+    </svg>
+  </div>
+  <div class="orbit-copy rv d1">
+    <div class="sec-label">Ecosystem</div>
+    <div class="h2" style="margin-top:8px">Habitat <b>Architecture</b></div>
+    <p class="copy" style="margin-top:18px;max-width:440px">Each studio earns its own keep. Together they share research, reputation, and capital. The result is a platform that compounds faster than any single vertical could alone.</p>
+    <div class="orbit-items">
+      <div class="oi">
+        <div>
+          <div class="oi-n">01</div>
+          <div class="oi-t">ETHRA Studio</div>
+          <p class="oi-s">High-value commissions drive early cashflow and build the portfolio that anchors ETHRA's cultural authority in the luxury market.</p>
+        </div>
+      </div>
+      <div class="oi">
+        <div>
+          <div class="oi-n">02</div>
+          <div class="oi-t">ETHRA Habitat Lab</div>
+          <p class="oi-s">Research contracts and prototypes generate long-term intellectual property and position ETHRA inside the space economy before it becomes crowded.</p>
+        </div>
+      </div>
+      <div class="oi">
+        <div>
+          <div class="oi-n">03</div>
+          <div class="oi-t">ETHRA Institute</div>
+          <p class="oi-s">Courses, workshops, and publications create high-margin recurring revenue while building a global community of practitioners who carry ETHRA's philosophy forward.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PARTNERS ═══ -->
+<section id="partners">
+  <p class="partners-intro rv">Designed to operate alongside the world's leading space organisations</p>
+  <div class="partners-row rv d1">
+    <div class="ag">
+      <svg viewBox="0 0 110 92" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="55" cy="46" rx="52" ry="43" fill="#0b3d91"/>
+        <ellipse cx="55" cy="46" rx="52" ry="43" stroke="#fc3d21" stroke-width="3.5" fill="none"/>
+        <text x="55" y="56" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="26" fill="white" letter-spacing="2">NASA</text>
+        <ellipse cx="55" cy="46" rx="39" ry="11.5" stroke="white" stroke-width="1.5" fill="none" transform="rotate(-30 55 46)"/>
+        <line x1="10" y1="46" x2="100" y2="46" stroke="white" stroke-width="1.5"/>
+      </svg>
+      <div class="ag-n">NASA</div>
+    </div>
+    <div class="ag">
+      <svg viewBox="0 0 130 48" xmlns="http://www.w3.org/2000/svg">
+        <text x="4" y="40" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="44" fill="#003399" letter-spacing="-1">ESA</text>
+        <rect x="4" y="43" width="122" height="3" fill="#fc3d21"/>
+      </svg>
+      <div class="ag-n">ESA</div>
+    </div>
+    <div class="ag">
+      <svg viewBox="0 0 130 55" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="42" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="42" fill="#ff9933" letter-spacing="-.5">ISRO</text>
+        <line x1="2" y1="47" x2="128" y2="47" stroke="#138808" stroke-width="2.5"/>
+        <line x1="2" y1="52" x2="128" y2="52" stroke="#000080" stroke-width="2.5"/>
+      </svg>
+      <div class="ag-n">ISRO</div>
+    </div>
+    <div class="ag">
+      <svg viewBox="0 0 130 48" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="40" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="42" fill="#003087" letter-spacing="-.5">JAXA</text>
+        <rect x="2" y="44" width="126" height="2.5" fill="#e60012"/>
+      </svg>
+      <div class="ag-n">JAXA</div>
+    </div>
+    <div class="ag">
+      <svg viewBox="0 0 168 40" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="33" font-family="Barlow Condensed,sans-serif" font-weight="300" font-size="36" fill="var(--fg)" letter-spacing=".5">SPACE</text>
+        <text x="115" y="33" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="36" fill="var(--a)">X</text>
+      </svg>
+      <div class="ag-n">SpaceX</div>
+    </div>
+    <div class="ag">
+      <svg viewBox="0 0 224 44" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="34" font-family="Barlow Condensed,sans-serif" font-weight="600" font-size="28" fill="var(--fg)" letter-spacing="1.5">ROSCOSMOS</text>
+        <line x1="2" y1="39" x2="222" y2="39" stroke="#cc0000" stroke-width="2"/>
+      </svg>
+      <div class="ag-n">Roscosmos</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MARKET ═══ -->
+<section id="market">
+  <div class="sec-label rv">Market</div>
+  <div class="h2 rv d1">Three <b>Vectors</b></div>
+  <p class="copy rv d2" style="max-width:540px;margin-top:14px">Each market is large enough to stand alone. Together they hedge cycle, geography, and category risk. Three sectors. One coordinated thesis.</p>
+  <div class="market-grid">
+    <div class="mk rv">
+      <div class="mk-n">SECTOR 01 · LUXURY INTERIOR</div>
+      <div class="mk-h">High-end terrestrial environments</div>
+      <p class="mk-body">Multi-billion dollar global market with increasing demand for personalised, culturally meaningful spaces. ETHRA Studio is the primary revenue engine in early-stage operations, building brand equity and immediate cashflow. Clients seek environments that function as inhabited artworks, not renovations.</p>
+      <div class="mk-status"><div class="mk-dot"></div>ACTIVE SECTOR</div>
+    </div>
+    <div class="mk rv d1">
+      <div class="mk-n">SECTOR 02 · SPACE ECONOMY</div>
+      <div class="mk-h">Orbital and deep-space habitation</div>
+      <p class="mk-body">A trillion-euro trajectory driven by government and private capital converging on long-duration human habitation. ETHRA Habitat Lab builds long-term intellectual property, institutional partnerships, and strategic frontier positioning. The interior science of spaceflight is a discipline that does not yet exist at scale.</p>
+      <div class="mk-status"><div class="mk-dot"></div>EMERGING SECTOR</div>
+    </div>
+    <div class="mk rv d2">
+      <div class="mk-n">SECTOR 03 · DESIGN EDUCATION</div>
+      <div class="mk-h">Scalable intellectual capital</div>
+      <p class="mk-body">Growing global demand for specialised, high-quality design learning. The ETHRA Institute creates high-margin recurring revenue while building brand authority and a global community of practitioners. Courses, workshops, and publications reach designers, researchers, and institutions worldwide. The fastest path to profitability in the ecosystem.</p>
+      <div class="mk-status"><div class="mk-dot"></div>HIGH MARGIN · SCALABLE</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EVIDENCE ═══ -->
+<section id="evidence">
+  <div class="ev-left rv">
+    <div class="sec-label">Why Design Matters</div>
+    <div class="ev-h">The science is not <em>abstract.</em> Here is what the evidence shows.</div>
+    <div class="ev-body">When environments are engineered for human wellbeing under stress, performance improves, errors fall, and people survive. Three datasets. Three environments. The same underlying principle.</div>
+
+    <div class="ev-stats">
+      <div class="ev-stat">
+        <div class="ev-sv">34%</div>
+        <div class="ev-sl">Increase in procedural errors in poorly designed ISS modules</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-sv">28%</div>
+        <div class="ev-sl">Reduction in stress incidents after NASA habitat redesign</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-sv">41%</div>
+        <div class="ev-sl">Reduction in SAD incidence via biophilic design at Concordia Station</div>
+      </div>
+      <div class="ev-stat">
+        <div class="ev-sv">22%</div>
+        <div class="ev-sl">Rate premium for design-led luxury hospitality properties</div>
+      </div>
+    </div>
+    <div class="ev-source">Sources: NASA HRP Evidence Report 2023 · ESA Concordia Programme 2019 · McKinsey Luxury Hospitality Index 2023</div>
+  </div>
+
+  <div class="ev-right rv d1">
+    <div class="sec-label">Extreme Environments</div>
+    <div class="ev-h" style="margin-top:8px">What hostile conditions <em>teach</em> civilian design.</div>
+    <p class="copy" style="margin-top:14px;font-size:.86rem">Defense and space programmes hold decades of human factors research that remains largely outside civilian design practice. ETHRA works at this boundary.</p>
+    <div class="ev-envs">
+      <div class="ev-env">
+        <div class="ev-en">ENV 01 · POLAR · minus 89°C · 9 months</div>
+        <div class="ev-eh">Antarctica</div>
+        <ul class="ev-points">
+          <li>Circadian lighting protocols from Concordia and Halley VI now inform ETHRA Studio's north-facing apartment work</li>
+          <li>Modular spatial reconfiguration tested at polar stations applied to flexible urban residential typologies</li>
+          <li>Biophilic material systems maintain psychological health in total darkness and low-light domestic environments</li>
+        </ul>
+      </div>
+      <div class="ev-env">
+        <div class="ev-en">ENV 02 · DESERT · 55°C · zero humidity</div>
+        <div class="ev-eh">Sahara and Arabian Peninsula</div>
+        <ul class="ev-points">
+          <li>Phase-change materials from military forward operating bases deliver 60% cooling energy reductions</li>
+          <li>Passive thermal mass systems applied as invisible infrastructure, not technical aesthetic</li>
+          <li>Wind-driven ventilation geometries developed for survival now inform ETHRA Studio's luxury desert commissions</li>
+        </ul>
+      </div>
+      <div class="ev-env">
+        <div class="ev-en">ENV 03 · ORBITAL · 408 km · microgravity</div>
+        <div class="ev-eh">Low Earth Orbit</div>
+        <ul class="ev-points">
+          <li>ISS water recycling efficiency of 93% has direct applications in water-stressed residential contexts</li>
+          <li>HEPA and photocatalytic filtration systems entering civilian construction via ETHRA Lab adaptation frameworks</li>
+          <li>Acoustic damping and spatial compression techniques developed for orbital modules applicable to high-density urban housing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ INVEST ═══ -->
+<section id="invest">
+  <div class="rv">
+    <div class="sec-label">Invest</div>
+    <div class="inv-h">A category-defining house, <em>at its inception.</em></div>
+    <p class="inv-body">ETHRA is seeking early-stage investment to build its founding team, develop its inaugural portfolio, expand laboratory output, and secure academic and industry partners. The opportunity is to enter a category of one, written across two atmospheres, before it becomes obvious.</p>
+    <p class="inv-body" style="margin-top:12px">We bridge the studio and the spacecraft. The salon and the station.</p>
+    <div style="margin-top:28px;display:flex;gap:12px">
+      <a href="mailto:hello@ethra.space" class="btn fill">Request the Dossier <span class="ar">→</span></a>
+    </div>
+  </div>
+  <div class="rv d1">
+    <div class="inv-grid">
+      <div class="iv"><div class="iv-v">€20/35K</div><div class="iv-l">Early monthly burn</div></div>
+      <div class="iv"><div class="iv-v">Y2/Y3</div><div class="iv-l">Projected break even</div></div>
+      <div class="iv"><div class="iv-v">×3</div><div class="iv-l">Revenue lines from day one</div></div>
+      <div class="iv"><div class="iv-v">IP</div><div class="iv-l">Compounding asset base</div></div>
+    </div>
+    <div class="inv-uses">
+      <div class="iu"><div class="iu-n">01</div><div class="iu-t">Build the founding team</div><p class="iu-s">Recruit across design, research, and operations to establish the core capability of the house.</p></div>
+      <div class="iu"><div class="iu-n">02</div><div class="iu-t">Develop the inaugural portfolio</div><p class="iu-s">Commission and complete a curated set of Studio projects that define ETHRA's aesthetic and technical authority.</p></div>
+      <div class="iu"><div class="iu-n">03</div><div class="iu-t">Expand laboratory output</div><p class="iu-s">Prototype habitability frameworks, publish research, and establish ETHRA's position inside the space economy.</p></div>
+      <div class="iu"><div class="iu-n">04</div><div class="iu-t">Secure academic and industry partners</div><p class="iu-s">Form strategic alliances with universities, agencies, and aerospace companies to accelerate IP development.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MISSION LOG ═══ -->
+<section id="log">
+  <div class="log-hdr rv">
+    <div>
+      <div class="sec-label">Mission Log</div>
+      <div class="h2" style="font-size:clamp(1.6rem,3vw,3rem)">Your <b>Dossier</b> Progress</div>
+      <p class="copy" style="max-width:360px;margin-top:8px;font-size:.82rem">Each section you encounter unlocks a mission node. Complete all seven to unlock full dossier access.</p>
+    </div>
+    <div class="log-prog">
+      <div class="log-prog-lbl">MISSION COMPLETION</div>
+      <div class="log-track"><div class="log-fill" id="lf"></div></div>
+      <div class="log-pct" id="lp">0 / 7</div>
+    </div>
+  </div>
+  <div class="log-grid">
+    <div class="log-node" id="ln0"><div class="log-ni">NODE 01</div><div class="log-nn">The House</div><div class="log-check">✓</div></div>
+    <div class="log-node" id="ln1"><div class="log-ni">NODE 02</div><div class="log-nn">Studios</div><div class="log-check">✓</div></div>
+    <div class="log-node" id="ln2"><div class="log-ni">NODE 03</div><div class="log-nn">Ecosystem</div><div class="log-check">✓</div></div>
+    <div class="log-node" id="ln3"><div class="log-ni">NODE 04</div><div class="log-nn">Market</div><div class="log-check">✓</div></div>
+    <div class="log-node" id="ln4"><div class="log-ni">NODE 05</div><div class="log-nn">Evidence</div><div class="log-check">✓</div></div>
+    <div class="log-node" id="ln5"><div class="log-ni">NODE 06</div><div class="log-nn">Investment</div><div class="log-check">✓</div></div>
+    <div class="log-node" id="ln6"><div class="log-ni">NODE 07</div><div class="log-nn">Field Notes</div><div class="log-check">✓</div></div>
+  </div>
+  <div class="log-cta">
+    <div class="log-msg" id="lm">SCROLL THROUGH ALL SECTIONS TO UNLOCK DOSSIER ACCESS</div>
+    <a href="mailto:hello@ethra.space" class="btn" id="lb" style="margin:0 auto;pointer-events:none;opacity:.3;display:inline-flex">Request Full Dossier <span class="ar">→</span></a>
+  </div>
+</section>
+
+<!-- ═══ JOURNAL ═══ -->
+<section id="journal">
+  <div class="sec-label rv">Journal</div>
+  <div class="h2 rv d1">Field <b>Notes</b></div>
+  <p class="copy rv d2" style="max-width:480px;margin-top:12px">Research, observation, and practice from the ETHRA studio. Four dispatches on designing environments for Earth and beyond.</p>
+
+  <div class="j-grid">
+    <!-- Article 01 — Featured -->
+    <a href="article-01-interior-architecture-beyond-earth.html" class="j-card lead rv">
+      <div class="j-img">
+        <svg class="j-infographic" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="800" height="500" fill="var(--card)"/>
+          <line x1="0" y1="125" x2="800" y2="125" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="0" y1="250" x2="800" y2="250" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="0" y1="375" x2="800" y2="375" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="200" y1="0" x2="200" y2="500" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="400" y1="0" x2="400" y2="500" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="600" y1="0" x2="600" y2="500" stroke="var(--line2)" stroke-width=".4"/>
+          <circle cx="400" cy="250" r="290" stroke="var(--a)" stroke-width=".8" stroke-dasharray="6 8" opacity=".35"/>
+          <circle cx="400" cy="250" r="195" stroke="var(--a)" stroke-width="1" stroke-dasharray="4 6" opacity=".45"/>
+          <circle cx="400" cy="250" r="105" stroke="var(--a)" stroke-width="1.2" opacity=".55"/>
+          <circle cx="400" cy="250" r="44" stroke="var(--a)" stroke-width="1" opacity=".65"/>
+          <circle cx="400" cy="250" r="18" fill="var(--a-f)" stroke="var(--a)" stroke-width="1"/>
+          <line x1="0" y1="250" x2="800" y2="250" stroke="var(--a-d)" stroke-width=".4"/>
+          <line x1="400" y1="0" x2="400" y2="500" stroke="var(--a-d)" stroke-width=".4"/>
+          <circle cx="400" cy="55" r="9" fill="var(--a)" opacity=".88"/>
+          <circle cx="505" cy="250" r="7" fill="var(--a2)" opacity=".82"/>
+          <circle cx="268" cy="338" r="8" fill="var(--a)" opacity=".72"/>
+          <text x="416" y="52" font-family="Share Tech Mono,monospace" font-size="9" fill="var(--a)" letter-spacing="1" opacity=".85">LEO HABITAT</text>
+          <text x="518" y="254" font-family="Share Tech Mono,monospace" font-size="9" fill="var(--a2)" letter-spacing="1" opacity=".8">STATION</text>
+          <text x="220" y="358" font-family="Share Tech Mono,monospace" font-size="9" fill="var(--a)" letter-spacing="1" opacity=".7">EARTH BASE</text>
+          <path d="M 400 64 Q 468 155 505 250" stroke="var(--a-d)" stroke-width="1" fill="none" stroke-dasharray="3 5"/>
+          <path d="M 505 250 Q 408 300 268 338" stroke="var(--a-d)" stroke-width="1" fill="none" stroke-dasharray="3 5"/>
+        </svg>
+        <div class="j-badge">ARTICLE 01</div>
+        <div class="j-time">8 MIN READ</div>
+      </div>
+      <div class="j-body">
+        <div class="j-tag">Interior Architecture · Space Design</div>
+        <div class="j-title">Interior Architecture Beyond Earth</div>
+        <p class="j-exc">The history of interior design has always been shaped by constraint. Stone, then timber, then steel defined what rooms could be. Now the constraint is atmosphere itself. Designing habitats for orbital environments forces a reckoning with every assumption the discipline has taken for granted. What emerges is not a futuristic aesthetic but a set of deeper principles that apply equally to a penthouse in London and a habitat in low Earth orbit.</p>
+        <div class="j-meta">
+          <div class="j-date">APRIL 2026 · ETHRA STUDIO</div>
+          <div class="j-arr">READ →</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 02 -->
+    <a href="article-02-designing-for-isolation.html" class="j-card rv d1">
+      <div class="j-img">
+        <svg class="j-infographic" viewBox="0 0 600 340" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="600" height="340" fill="var(--card)"/>
+          <line x1="0" y1="85"  x2="600" y2="85"  stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="0" y1="170" x2="600" y2="170" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="0" y1="255" x2="600" y2="255" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="150" y1="0" x2="150" y2="340" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="300" y1="0" x2="300" y2="340" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="450" y1="0" x2="450" y2="340" stroke="var(--line2)" stroke-width=".4"/>
+          <rect x="55" y="55" width="490" height="230" rx="2" stroke="var(--a)" stroke-width=".8" fill="none" opacity=".3"/>
+          <rect x="105" y="90" width="390" height="160" rx="2" stroke="var(--a)" stroke-width=".8" fill="none" opacity=".45"/>
+          <rect x="155" y="120" width="290" height="100" rx="2" stroke="var(--a)" stroke-width="1" fill="var(--a-f)" opacity=".65"/>
+          <circle cx="300" cy="170" r="8" fill="var(--a)" opacity=".88"/>
+          <circle cx="300" cy="170" r="22" stroke="var(--a)" stroke-width=".6" fill="none" opacity=".45" stroke-dasharray="2 4"/>
+          <circle cx="300" cy="170" r="42" stroke="var(--a)" stroke-width=".4" fill="none" opacity=".28" stroke-dasharray="2 6"/>
+          <text x="61" y="53" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--faint)" letter-spacing="1">OUTER SHELL</text>
+          <text x="111" y="88" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--faint)" letter-spacing="1">THERMAL BUFFER</text>
+          <text x="161" y="118" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--a)" letter-spacing="1">HABITABLE VOLUME</text>
+          <line x1="476" y1="55" x2="476" y2="285" stroke="var(--a-d)" stroke-width=".6"/>
+          <text x="484" y="60" font-family="Share Tech Mono,monospace" font-size="7" fill="var(--a2)" opacity=".8">-80°C</text>
+          <text x="484" y="283" font-family="Share Tech Mono,monospace" font-size="7" fill="var(--a3)" opacity=".8">+21°C</text>
+          <defs>
+            <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#d97b3a" stop-opacity=".8"/>
+              <stop offset="100%" stop-color="#38c488" stop-opacity=".8"/>
+            </linearGradient>
+          </defs>
+          <rect x="472" y="65" width="4" height="210" fill="url(#tg)" rx="2"/>
+        </svg>
+        <div class="j-badge">ARTICLE 02</div>
+        <div class="j-time">6 MIN READ</div>
+      </div>
+      <div class="j-body">
+        <div class="j-tag">Psychology · Extreme Environments</div>
+        <div class="j-title">Designing for Isolation</div>
+        <p class="j-exc">What happens to the human mind when the environment stops changing? Concordia, the ISS, and long-duration submarine deployments have produced a body of evidence on how spatial design either accelerates or delays cognitive deterioration under isolation.</p>
+        <div class="j-meta">
+          <div class="j-date">MARCH 2026 · ETHRA LAB</div>
+          <div class="j-arr">READ →</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 03 -->
+    <a href="article-03-modular-habitats.html" class="j-card rv d2">
+      <div class="j-img">
+        <svg class="j-infographic" viewBox="0 0 600 340" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="600" height="340" fill="var(--card)"/>
+          <line x1="0" y1="85"  x2="600" y2="85"  stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="0" y1="170" x2="600" y2="170" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="0" y1="255" x2="600" y2="255" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="150" y1="0" x2="150" y2="340" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="300" y1="0" x2="300" y2="340" stroke="var(--line2)" stroke-width=".4"/>
+          <line x1="450" y1="0" x2="450" y2="340" stroke="var(--line2)" stroke-width=".4"/>
+          <rect x="75" y="98" width="110" height="70" stroke="var(--a)" stroke-width="1" fill="var(--a-f)" opacity=".8" rx="1"/>
+          <text x="96" y="137" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--a)" letter-spacing=".8">LIVING</text>
+          <rect x="218" y="78" width="164" height="112" stroke="var(--a)" stroke-width="1.2" fill="var(--a-f)" opacity=".88" rx="1"/>
+          <text x="240" y="128" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--a)" letter-spacing=".8">RESEARCH</text>
+          <rect x="75" y="198" width="110" height="66" stroke="var(--a2)" stroke-width="1" fill="rgba(217,123,58,.05)" opacity=".8" rx="1"/>
+          <text x="96" y="234" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--a2)" letter-spacing=".6">LIFE SYS.</text>
+          <rect x="420" y="98" width="102" height="152" stroke="var(--a3)" stroke-width="1" fill="rgba(56,196,136,.04)" opacity=".8" rx="1"/>
+          <text x="440" y="172" font-family="Share Tech Mono,monospace" font-size="7.5" fill="var(--a3)" letter-spacing=".6">GROW</text>
+          <line x1="185" y1="133" x2="218" y2="133" stroke="var(--a-d)" stroke-width="2"/>
+          <line x1="185" y1="231" x2="218" y2="178" stroke="var(--a-d)" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <line x1="382" y1="133" x2="420" y2="153" stroke="var(--a-d)" stroke-width="1.5"/>
+          <circle cx="200" cy="133" r="3" fill="var(--a)" opacity=".88"/>
+          <circle cx="200" cy="231" r="3" fill="var(--a2)" opacity=".88"/>
+          <circle cx="400" cy="133" r="3" fill="var(--a3)" opacity=".88"/>
+        </svg>
+        <div class="j-badge">ARTICLE 03</div>
+        <div class="j-time">7 MIN READ</div>
+      </div>
+      <div class="j-body">
+        <div class="j-tag">Architecture · Systems Design</div>
+        <div class="j-title">Modular Habitats</div>
+        <p class="j-exc">Modular design is not a compromise. The ability to reconfigure a space without demolition, to add a volume without disturbing the whole, and to design for conditions not yet specified are capabilities terrestrial architecture largely abandoned. Space habitat research is recovering them.</p>
+        <div class="j-meta">
+          <div class="j-date">FEBRUARY 2026 · ETHRA LAB</div>
+          <div class="j-arr">READ →</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Article 04 -->
+    <a href="article-04-personal-fascination-to-design-research.html" class="j-card rv d3">
+      <div class="j-img">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="Design research studio" loading="lazy">
+        <div class="j-badge">ARTICLE 04</div>
+        <div class="j-time">5 MIN READ</div>
+      </div>
+      <div class="j-body">
+        <div class="j-tag">Perspective · Founder's Note</div>
+        <div class="j-title">From Personal Fascination to Design Research</div>
+        <p class="j-exc">Every practice begins with an obsession. For ETHRA, it began with a simple question asked at the wrong scale: what does it actually feel like to be inside a space designed for survival rather than comfort? The answer led from Antarctic expedition reports to NASA human factors research, and eventually to the conviction that luxury interior design and space habitat engineering are not opposites but the same inquiry at different pressures.</p>
+        <div class="j-meta">
+          <div class="j-date">JANUARY 2026 · ETHRA INSTITUTE</div>
+          <div class="j-arr">READ →</div>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section id="cta">
+  <div class="cta-left rv">
+    <div class="cta-eye">Select your vector</div>
+    <div class="cta-h">Ready to explore<br>which <b>world</b><br>you are in?</div>
+    <p class="cta-sub">Three studios. One shared mission. Whether you are a client, investor, researcher, or designer, there is a place for you inside ETHRA.</p>
+  </div>
+  <div class="cta-right rv d1">
+    <a href="#" class="cta-item">
+      <div><div class="cta-il">ETHRA Studio</div><div class="cta-is">LUXURY INTERIOR · BESPOKE COMMISSIONS</div></div>
+      <div class="cta-ia">→</div>
+    </a>
+    <a href="#" class="cta-item">
+      <div><div class="cta-il">ETHRA Habitat Lab</div><div class="cta-is">RESEARCH · PARTNERSHIPS · PROTOTYPING</div></div>
+      <div class="cta-ia">→</div>
+    </a>
+    <a href="#" class="cta-item">
+      <div><div class="cta-il">ETHRA Institute</div><div class="cta-is">EDUCATION · WORKSHOPS · PUBLICATIONS</div></div>
+      <div class="cta-ia">→</div>
+    </a>
+    <a href="mailto:hello@ethra.space" class="cta-item">
+      <div><div class="cta-il">General Enquiry</div><div class="cta-is">INVESTORS · PRESS · PARTNERSHIPS</div></div>
+      <div class="cta-ia">→</div>
+    </a>
+  </div>
+  <div class="cta-quote rv">
+    "We are not building a studio. We are building the conditions under which design becomes a science of inhabitation."
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="ft-brand">
+    <span class="ft-logo">ETHRA</span>
+    <p class="ft-tagline">Designing every atmosphere we will inhabit. On Earth, and beyond.</p>
+    <div class="ft-contact" style="margin-top:18px">
+      <a href="mailto:hello@ethra.space" class="ft-email">hello@ethra.space →</a>
+    </div>
+  </div>
+  <div>
+    <span class="ft-col-lbl">Studios</span>
+    <ul class="ft-links">
+      <li><a href="#">ETHRA Studio</a></li>
+      <li><a href="#">ETHRA Habitat Lab</a></li>
+      <li><a href="#">ETHRA Institute</a></li>
+    </ul>
+  </div>
+  <div>
+    <span class="ft-col-lbl">Navigate</span>
+    <ul class="ft-links">
+      <li><a href="#statement">The House</a></li>
+      <li><a href="#studios">Studios</a></li>
+      <li><a href="#market">Market</a></li>
+      <li><a href="#invest">Invest</a></li>
+      <li><a href="#journal">Journal</a></li>
+      <li><a href="#cta">Contact</a></li>
+    </ul>
+  </div>
+  <div class="ft-bottom">
+    <div class="ft-copy">© 2026 ETHRA DESIGN SYSTEMS · ALL RIGHTS RESERVED</div>
+    <button class="ft-theme" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span id="fti">☀️</span> <span id="ftt">SUN MODE</span>
+    </button>
+  </div>
+</footer>
+
+<script>
+/* ─── THEME ─── */
+function toggleTheme() {
+  const h = document.documentElement;
+  const dark = h.getAttribute('data-theme') === 'dark';
+  h.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('ntheme').textContent = dark ? '🌙' : '☀️';
+  document.getElementById('fti').textContent    = dark ? '🌙' : '☀️';
+  document.getElementById('ftt').textContent    = dark ? 'DARK MODE' : 'SUN MODE';
+  document.querySelector('.h-orb').style.color  = dark ? '#b05210' : '#4d9fcb';
+}
+document.querySelector('.h-orb').style.color = '#4d9fcb';
+
+/* ─── STARFIELD ─── */
+(function(){
+  const c = document.getElementById('sf'), x = c.getContext('2d');
+  let s = [];
+  function r(){ c.width=innerWidth; c.height=innerHeight; }
+  function mk(){
+    s=[];
+    for(let i=0;i<440;i++) s.push({
+      x:Math.random()*c.width, y:Math.random()*c.height,
+      r:Math.random()*.82+.1, o:Math.random()*.46+.04,
+      p:Math.random()*Math.PI*2, sp:Math.random()*.007+.002
+    });
+  }
+  function dr(){
+    x.clearRect(0,0,c.width,c.height);
+    const t=Date.now()*.001;
+    s.forEach(s=>{
+      const o=s.o*(.42+.58*Math.sin(t*s.sp*8+s.p));
+      x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);
+      x.fillStyle=`rgba(188,214,236,${o})`;x.fill();
+    });
+    requestAnimationFrame(dr);
+  }
+  r();mk();dr();
+  window.addEventListener('resize',()=>{r();mk();});
+})();
+
+/* ─── CURSOR ─── */
+(function(){
+  const el = document.getElementById('cr');
+  document.addEventListener('mousemove', e => {
+    el.style.left = e.clientX + 'px';
+    el.style.top  = e.clientY + 'px';
+  }, { passive:true });
+  document.querySelectorAll('a,button').forEach(el2 => {
+    el2.addEventListener('mouseenter', () => el.classList.add('hov'));
+    el2.addEventListener('mouseleave', () => el.classList.remove('hov'));
+  });
+  document.addEventListener('click', () => {
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+    setTimeout(() => el.classList.remove('pop'), 520);
+  });
+})();
+
+/* ─── NAV ─── */
+(function(){
+  const nav  = document.querySelector('nav');
+  const hero = document.getElementById('hero');
+  let last=0, tick=false;
+  function apply(){
+    const y=window.scrollY, h=hero?hero.offsetHeight:innerHeight;
+    y>h*.6 ? nav.classList.add('solid')    : nav.classList.remove('solid');
+    y>h&&y>last+8 ? nav.classList.add('hide') : (y<last-4||y<=h) && nav.classList.remove('hide');
+    last=y; tick=false;
+  }
+  window.addEventListener('scroll',()=>{ if(!tick){requestAnimationFrame(apply);tick=true;} },{passive:true});
+  apply();
+})();
+
+/* ─── UTC CLOCK removed: no telemetry strip in new design ─── */
+
+/* ─── SCROLL REVEAL ─── */
+const ro = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+
+/* ─── MISSION LOG ─── */
+(function(){
+  const secs = ['statement','studios','orbit','market','evidence','invest','journal'];
+  const done = new Set();
+  const nodes = secs.map((_,i)=>document.getElementById('ln'+i));
+  const fill  = document.getElementById('lf');
+  const pct   = document.getElementById('lp');
+  const msg   = document.getElementById('lm');
+  const btn   = document.getElementById('lb');
+
+  function update(){
+    const n=done.size;
+    fill.style.width = Math.round(n/7*100)+'%';
+    pct.textContent  = n+' / 7';
+    nodes.forEach((nd,i)=>{
+      if(done.has(secs[i])){ nd.classList.add('done'); nd.classList.remove('unlocked'); }
+      else { nd.classList.remove('done'); if(i===done.size) nd.classList.add('unlocked'); }
+    });
+    if(n>=7){
+      msg.textContent='DOSSIER UNLOCKED · ALL MISSION NODES COMPLETE';
+      msg.classList.add('on');
+      btn.style.pointerEvents='auto';btn.style.opacity='1';
+    } else {
+      const rem=7-n;
+      msg.textContent=rem+' SECTION'+(rem!==1?'S':'')+' REMAINING TO UNLOCK FULL DOSSIER ACCESS';
+      msg.classList.remove('on');
+    }
+  }
+
+  const so=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting&&!done.has(e.target.id)){ done.add(e.target.id); update(); } });
+  },{threshold:.25});
+  secs.forEach(id=>{ const el=document.getElementById(id); if(el) so.observe(el); });
+  update();
+})();
+</script>
+</body>
+</html>
