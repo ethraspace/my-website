@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In confined environments, spatial design is therapeutic infrastructure. Light, materiality, and spatial zoning directly mediate the psychological experience of isolation.">
+<meta property="og:title" content="Designing for Isolation">
+<meta property="og:description" content="How interior space shapes mental health in extreme habitats — and why light, materiality, and zoning are therapeutic decisions.">
+<meta property="og:type" content="article">
+<title>Designing for Isolation — Article 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F5F2EC;--ink:#1A1710;--ink-2:#3A3828;--ink-3:#78766A;--white:#FFFFFF;--rule:#DDD9CE;--accent:#5C3A1E;--hero-bg:#1A100A}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:17px;line-height:1.78;-webkit-font-smoothing:antialiased}
+.progress-bar{position:fixed;top:50px;left:0;width:0%;height:2px;background:var(--accent);z-index:200}
+.topbar{background:var(--hero-bg);padding:0 clamp(1.5rem,6vw,5rem);height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid #2E1C12}
+.topbar-series{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5A4035}
+.topbar-nav{display:flex;gap:1.75rem;list-style:none}
+.topbar-nav a{font-size:11px;letter-spacing:.06em;color:#5A4035;text-decoration:none;transition:color .2s}
+.topbar-nav a:hover,.topbar-nav a.active{color:#C8A88A}
+.hero{background:var(--hero-bg);min-height:88vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(1.5rem,8vw,8rem) clamp(3rem,7vh,5.5rem);position:relative;overflow:hidden}
+.hero-graphic{position:absolute;inset:0;width:100%;height:100%}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,#1A100A 35%,rgba(26,16,10,.5) 65%,transparent)}
+.hero-meta{display:flex;gap:1.5rem;margin-bottom:1.75rem;align-items:center;position:relative;z-index:1}
+.hero-tag{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#C8A88A;border:1px solid #3A2015;padding:5px 14px;border-radius:2px}
+.hero-series{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#3A2015}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,7vw,5.2rem);font-weight:400;line-height:1.06;color:#EBE0D4;max-width:820px;position:relative;z-index:1}
+.hero h1 em{font-style:italic;color:#C8A88A}
+.hero-deck{font-size:clamp(1rem,2vw,1.18rem);font-weight:300;color:#8A6A54;max-width:580px;margin-top:1.75rem;line-height:1.7;position:relative;z-index:1}
+.article-wrap{max-width:740px;margin:0 auto;padding:clamp(3rem,8vw,6rem) clamp(1.5rem,6vw,3rem)}
+.article-byline{display:flex;flex-wrap:wrap;gap:2rem;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-bottom:2rem;border-bottom:1px solid var(--rule);margin-bottom:3rem}
+.prose p{font-size:17px;line-height:1.82;color:var(--ink-2);margin-bottom:1.6rem}
+.prose p:first-of-type::first-letter{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:500;float:left;line-height:.82;margin:.06em .07em -.02em 0;color:var(--accent)}
+.prose h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:500;color:var(--ink);margin:3.5rem 0 1.1rem}
+.prose blockquote{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;color:var(--ink);line-height:1.42;margin:3.5rem 0;padding:2rem 2.5rem;border-left:3px solid var(--accent);background:var(--white)}
+.prose blockquote footer{font-family:'DM Sans',sans-serif;font-size:11px;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:.9rem;display:block}
+.inline-graphic{margin:3.5rem 0;border-radius:4px;overflow:hidden}
+.inline-graphic svg{display:block;width:100%;height:auto}
+.graphic-caption{font-size:12px;line-height:1.65;color:var(--ink-3);margin-top:.85rem;padding-left:.9rem;border-left:2px solid var(--rule)}
+.graphic-caption strong{color:var(--ink-2)}
+.graphic-caption a{color:var(--accent);text-decoration:none}
+.two-graphics{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:3.5rem 0}
+.two-graphics .inline-graphic{margin:0}
+.highlight-strip{background:var(--white);border-left:4px solid var(--accent);padding:1.5rem 2rem;margin:3rem 0;border-radius:0 4px 4px 0}
+.highlight-strip p{font-size:14px;line-height:1.7;color:var(--ink-2);margin:0}
+.highlight-strip strong{color:var(--ink)}
+.references{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:2rem 2.5rem;margin-top:4rem}
+.references h4{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:1.25rem}
+.references ol{padding-left:1.2rem}
+.references li{font-size:12.5px;line-height:1.75;color:var(--ink-2);margin-bottom:.55rem}
+.references li a{color:var(--accent);text-decoration:none}
+.read-next{background:var(--hero-bg);padding:clamp(2.5rem,5vw,4rem) clamp(1.5rem,8vw,8rem);display:flex;align-items:center;justify-content:space-between;gap:2rem;border-top:1px solid #2E1C12}
+.rn-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#3A2015;margin-bottom:.7rem}
+.rn-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:#C8A88A;line-height:1.25;max-width:460px}
+.rn-link{text-decoration:none;display:flex;align-items:center;gap:1.5rem}
+.rn-arrow{width:52px;height:52px;border:1px solid #2E1C12;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s,background .2s}
+.rn-link:hover .rn-arrow{background:#2E1C12;border-color:var(--accent)}
+@media(max-width:640px){.topbar-nav{display:none}.hero{min-height:72vh}.two-graphics{grid-template-columns:1fr}.read-next{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="prog"></div>
+<nav class="topbar">
+  <span class="topbar-series">Designing Human Space — Series</span>
+  <ul class="topbar-nav">
+    <li><a href="article-01-interior-architecture-beyond-earth.html">01 — Beyond Earth</a></li>
+    <li><a href="article-02-designing-for-isolation.html" class="active">02 — Isolation</a></li>
+    <li><a href="article-03-modular-habitats.html">03 — Modular</a></li>
+    <li><a href="article-04-personal-fascination-to-design-research.html">04 — Research</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <!-- SVG: solitary window of light in darkness — isolation and warmth tension -->
+  <svg class="hero-graphic" viewBox="0 0 1400 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="dark2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#1F0E05"/>
+        <stop offset="100%" stop-color="#0A0502"/>
+      </radialGradient>
+      <radialGradient id="warmlight" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#C87A30" stop-opacity=".7"/>
+        <stop offset="60%" stop-color="#8B4A18" stop-opacity=".3"/>
+        <stop offset="100%" stop-color="#8B4A18" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="coldlight" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#5A8FB0" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#5A8FB0" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="1400" height="700" fill="url(#dark2)"/>
+    <!-- Warm ambient glow from window -->
+    <ellipse cx="700" cy="350" rx="340" ry="240" fill="url(#warmlight)"/>
+    <!-- Window frame structure -->
+    <rect x="580" y="180" width="240" height="280" rx="4" fill="#12080
+3" stroke="#2A1508" stroke-width="3"/>
+    <!-- Window panes -->
+    <rect x="592" y="192" width="104" height="124" rx="2" fill="#C87A30" opacity=".12"/>
+    <rect x="704" y="192" width="104" height="124" rx="2" fill="#C87A30" opacity=".08"/>
+    <rect x="592" y="324" width="104" height="124" rx="2" fill="#C87A30" opacity=".15"/>
+    <rect x="704" y="324" width="104" height="124" rx="2" fill="#C87A30" opacity=".1"/>
+    <!-- Cross divider -->
+    <rect x="579" y="248" width="243" height="4" fill="#2A1508"/>
+    <rect x="696" y="180" width="4" height="282" fill="#2A1508"/>
+    <!-- Warm light cast on floor -->
+    <path d="M580,460 L420,700 L980,700 L820,460 Z" fill="#C87A30" opacity=".04"/>
+    <!-- Cold overhead light strip -->
+    <rect x="300" y="100" width="800" height="6" rx="3" fill="#5A8FB0" opacity=".3"/>
+    <ellipse cx="700" cy="103" rx="380" ry="80" fill="url(#coldlight)"/>
+    <!-- Texture: horizontal lines suggesting walls -->
+    <line x1="0" y1="220" x2="1400" y2="220" stroke="#1A0C06" stroke-width="1" opacity=".4"/>
+    <line x1="0" y1="480" x2="1400" y2="480" stroke="#1A0C06" stroke-width="1" opacity=".4"/>
+    <!-- Circadian clock annotation -->
+    <circle cx="1150" cy="200" r="55" fill="none" stroke="#3A2010" stroke-width="1.5"/>
+    <line x1="1150" y1="145" x2="1150" y2="165" stroke="#C87A30" stroke-width="2" opacity=".6"/>
+    <line x1="1150" y1="200" x2="1175" y2="200" stroke="#5A8FB0" stroke-width="2" opacity=".4"/>
+    <text x="1150" y="272" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5A4035" letter-spacing="1">CIRCADIAN RHYTHM</text>
+  </svg>
+  <div class="hero-overlay"></div>
+  <div class="hero-meta">
+    <span class="hero-tag">Article 02 of 04</span>
+    <span class="hero-series">Psychology of Space · Circadian Design · Behavioural Health</span>
+  </div>
+  <h1>Designing for<br><em>Isolation</em></h1>
+  <p class="hero-deck">How interior space shapes mental health in extreme habitats — and why light, materiality, and spatial zoning are not aesthetic decisions but therapeutic ones.</p>
+</header>
+
+<main class="article-wrap">
+  <div class="article-byline">
+    <span>Psychology of Space</span><span>Circadian Design</span><span>Behavioural Health</span><span>Spatial Wellbeing</span>
+  </div>
+  <div class="prose">
+    <p>In extreme habitats, space is not measured only in square metres. It is measured in stress, privacy, sensory rhythm, and the degree to which an environment allows a person to feel human within conditions that are, by nature, inhuman. Confinement is a spatial condition before it is a psychological one. The built interior — its proportions, its material palette, its acoustic texture, the quality and timing of its light — either moderates or amplifies the biological and emotional toll of isolation. Interior architecture, in this context, is not decorative. It is the primary instrument through which a habitat either supports or degrades its occupants.</p>
+    <p>The psychology of confined environments is well-documented. Research on polar overwintering at stations including Concordia and McMurdo has established a characteristic pattern of psychological deterioration in the absence of adequate spatial and sensory variety. Subjects consistently report monotony as more debilitating than danger; the relentless homogeneity of a poorly designed interior produces cognitive disengagement, interpersonal friction, and what researchers describe as the <em>third-quarter phenomenon</em> — a marked decline in mood and performance at the three-quarter mark of a confined mission.</p>
+
+    <!-- Circadian light timeline graphic -->
+    <div class="inline-graphic">
+      <svg viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg">
+        <rect width="800" height="220" fill="#1A100A"/>
+        <text x="30" y="35" font-family="Cormorant Garamond,serif" font-size="14" fill="#C8A88A" font-style="italic">Circadian Lighting Sequence — 24-Hour Habitat Cycle</text>
+        <!-- Timeline bar -->
+        <defs>
+          <linearGradient id="circadian" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1A2A40"/>
+            <stop offset="15%" stop-color="#2A4A70"/>
+            <stop offset="30%" stop-color="#7AAFC8"/>
+            <stop offset="45%" stop-color="#E8D080"/>
+            <stop offset="60%" stop-color="#E8C060"/>
+            <stop offset="75%" stop-color="#C87830"/>
+            <stop offset="88%" stop-color="#5A3018"/>
+            <stop offset="100%" stop-color="#1A2A40"/>
+          </linearGradient>
+        </defs>
+        <rect x="30" y="80" width="740" height="60" rx="6" fill="url(#circadian)"/>
+        <!-- Time labels -->
+        <text x="30" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#5A4035" letter-spacing=".5">00:00</text>
+        <text x="135" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#5A4035" letter-spacing=".5">04:00</text>
+        <text x="240" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#7AAFC8" letter-spacing=".5">08:00</text>
+        <text x="364" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#E8D080" letter-spacing=".5">12:00</text>
+        <text x="490" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#C87830" letter-spacing=".5">16:00</text>
+        <text x="620" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#5A4035" letter-spacing=".5">20:00</text>
+        <text x="745" y="165" font-family="DM Sans,sans-serif" font-size="9" fill="#5A4035" letter-spacing=".5">24:00</text>
+        <!-- Phase labels -->
+        <text x="240" y="70" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#7AAFC8" letter-spacing=".8">COOL — WAKE</text>
+        <text x="400" y="70" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#E8D080" letter-spacing=".8">NEUTRAL — WORK</text>
+        <text x="580" y="70" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#C87830" letter-spacing=".8">WARM — WIND DOWN</text>
+        <!-- Tick marks -->
+        <line x1="240" y1="78" x2="240" y2="142" stroke="#0A0502" stroke-width="1" opacity=".5"/>
+        <line x1="400" y1="78" x2="400" y2="142" stroke="#0A0502" stroke-width="1" opacity=".5"/>
+        <line x1="580" y1="78" x2="580" y2="142" stroke="#0A0502" stroke-width="1" opacity=".5"/>
+        <text x="400" y="200" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#3A2010" letter-spacing="1">DYNAMIC LIGHTING AS CIRCADIAN INFRASTRUCTURE — NO WINDOWS REQUIRED</text>
+      </svg>
+    </div>
+    <p class="graphic-caption"><strong>Fig. 1 —</strong> Circadian lighting sequence for a closed habitat: spectral and intensity shifts across the 24-hour cycle replace the solar cues absent in extreme environments. Research by Figueiro et al. (2016) demonstrates measurable improvement in sleep quality and fatigue reduction through dynamic lighting protocols. Diagram: author's own.</p>
+
+    <h3>Circadian Architecture: Light as Temporal Infrastructure</h3>
+    <p>Among the design variables available to the interior architect in extreme environments, light is the most physiologically potent. In habitats where natural light is absent, intermittent, or spectrally distorted — as in Antarctica in winter, or on a Martian surface where solar intensity is approximately half of Earth's — artificial light becomes the sole circadian signal available to the occupant's biological system. Circadian lighting design — the calibration of artificial light spectra, intensity, and timing to support the natural sleep-wake cycle — is therefore not a comfort measure but a performance-critical intervention. Research conducted in collaboration with NASA and ESA has demonstrated that dynamic lighting systems can mitigate circadian disruption, improve sleep quality, and reduce fatigue scores in isolated crews.</p>
+
+    <blockquote>
+      "Light, in the absence of windows, becomes more than illumination. It is orientation, rhythm, mood — the most powerful signal available to a body attempting to locate itself in time."
+      <footer>— Figueiro et al., Photochemistry and Photobiology, 2016</footer>
+    </blockquote>
+
+    <h3>Zoning, Privacy, and the Architecture of Retreat</h3>
+    <p>The spatial organisation of a habitat interior — particularly its distribution of communal and private zones — constitutes a critical design parameter for psychological health. Access to personal territorial control is a fundamental human need: the ability to withdraw from social space, to exercise agency over one's immediate environment, and to experience the restorative quality of privacy are not luxuries but biological requirements.</p>
+
+    <div class="two-graphics">
+      <div class="inline-graphic">
+        <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
+          <rect width="380" height="280" fill="#1A100A"/>
+          <text x="190" y="25" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="12" fill="#C8A88A" font-style="italic">ISS — Personal Sleep Alcove</text>
+          <!-- Alcove shape -->
+          <rect x="80" y="50" width="220" height="170" rx="6" fill="#12080
+3" stroke="#3A2015" stroke-width="1.5"/>
+          <!-- Sleeping pad -->
+          <rect x="95" y="65" width="190" height="90" rx="3" fill="#1E100A" stroke="#2A1508" stroke-width="1"/>
+          <!-- Personal items suggestion -->
+          <rect x="95" y="165" width="60" height="40" rx="2" fill="#1E100A" stroke="#2A1508" stroke-width="1"/>
+          <rect x="165" y="165" width="50" height="40" rx="2" fill="#1E100A" stroke="#2A1508" stroke-width="1"/>
+          <!-- Warm light strip -->
+          <rect x="80" y="48" width="220" height="4" rx="2" fill="#C87A30" opacity=".5"/>
+          <text x="190" y="240" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5A4035" letter-spacing=".8">TERRITORIAL OWNERSHIP</text>
+          <text x="190" y="255" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5A4035" letter-spacing=".8">ACOUSTIC SEPARATION</text>
+          <text x="190" y="270" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5A4035" letter-spacing=".8">PERSONALISATION</text>
+        </svg>
+      </div>
+      <div class="inline-graphic">
+        <svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
+          <rect width="380" height="280" fill="#1A100A"/>
+          <text x="190" y="25" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="12" fill="#C8A88A" font-style="italic">Halley VI — Communal Zone</text>
+          <!-- Table -->
+          <ellipse cx="190" cy="150" rx="90" ry="55" fill="#1E100A" stroke="#3A2015" stroke-width="1.5"/>
+          <!-- Chairs -->
+          <circle cx="190" cy="85" r="16" fill="#12080
+3" stroke="#2A1508" stroke-width="1"/>
+          <circle cx="280" cy="120" r="16" fill="#12080
+3" stroke="#2A1508" stroke-width="1"/>
+          <circle cx="100" cy="120" r="16" fill="#12080
+3" stroke="#2A1508" stroke-width="1"/>
+          <circle cx="280" cy="180" r="16" fill="#12080
+3" stroke="#2A1508" stroke-width="1"/>
+          <circle cx="100" cy="180" r="16" fill="#12080
+3" stroke="#2A1508" stroke-width="1"/>
+          <circle cx="190" cy="215" r="16" fill="#12080
+3" stroke="#2A1508" stroke-width="1"/>
+          <!-- Overhead warm light -->
+          <circle cx="190" cy="150" r="30" fill="#C87A30" opacity=".08"/>
+          <text x="190" y="250" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5A4035" letter-spacing=".8">SOCIAL REGENERATION</text>
+          <text x="190" y="265" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5A4035" letter-spacing=".8">SHARED RITUAL — DINING</text>
+        </svg>
+      </div>
+    </div>
+    <p class="graphic-caption"><strong>Fig. 2–3 —</strong> Left: ISS-style personal sleeping alcove — territory, acoustic separation, and personalisation as psychological anchors. Right: Halley VI communal dining zone plan — the shared table as the habitat's most important social space. Hugh Broughton Architects, 2013. Diagrams: author's own after published plans.</p>
+
+    <h3>Materiality, Familiarity, and the Domestic Interior</h3>
+    <p>Studies of long-duration isolation consistently identify a <em>longing for nature</em> as a primary psychological stressor: the absence of natural materials, irregular forms, and biological growth produces a perceptual and affective impoverishment that compounds the stress of confinement. Interior architecture can respond to this condition without requiring the literal presence of organic material. The simulation of warmth through material selection — wood-effect panels, woven textile surfaces, tactile floor finishes — introduces sensory variety and associative familiarity that partially addresses the affective deficit of a purely technical interior.</p>
+    <div class="highlight-strip">
+      <p><strong>Design principle:</strong> Material contrast between zone types — soft textiles in retreat areas against harder operational finishes — activates sensory differentiation that reinforces the psychological transition between modes of occupation. Without such differentiation, all areas converge into a single undifferentiated spatial experience, eliminating the restorative transitions between work and rest essential to long-term psychological function.</p>
+    </div>
+    <p>The domestic cue — a texture, a colour, a proportional relationship that recalls the warmth and scale of a lived home — functions as an emotional anchor that mitigates alienation. Crews at Halley VI, whose Hugh Broughton Architects-designed station introduced a deliberately warm, material-rich interior aesthetic, reported markedly higher satisfaction scores across all habitability dimensions measured. This is not anecdote. It is evidence-based interior architecture in operation.</p>
+  </div>
+
+  <div class="references">
+    <h4>References &amp; Sources</h4>
+    <ol>
+      <li>Bhargava, A. et al. "Psychosocial Issues of Antarctic Expeditioners." <em>Indian Journal of Psychiatry</em>, 2000.</li>
+      <li>Figueiro, M.G. et al. "The Effects of Light on the Human Circadian System." <em>Photochemistry and Photobiology</em>, 2016.</li>
+      <li>Ulrich, R.S. "View Through a Window May Influence Recovery." <em>Science</em>, 1984. doi:10.1126/science.6143402</li>
+      <li>Browning, W.D., Ryan, C.O. &amp; Clancy, J.O. <em>14 Patterns of Biophilic Design.</em> Terrapin Bright Green, 2014.</li>
+      <li>Hugh Broughton Architects. <em>Halley VI Antarctic Research Station.</em> 2013. <a href="https://www.hba.co.uk/projects/halley-vi-antarctic-research-station/" target="_blank">hba.co.uk</a></li>
+      <li>ESA / IPEV. <em>Concordia Human Research Programme.</em> 2022. <a href="https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Concordia" target="_blank">esa.int</a></li>
+    </ol>
+  </div>
+</main>
+
+<footer class="read-next">
+  <div>
+    <p class="rn-label">Next in the series — Article 03</p>
+    <p class="rn-title">Modular Habitats, Flexible Lives: What Mars Can Teach Us About Compact Interior Design</p>
+  </div>
+  <a class="rn-link" href="article-03-modular-habitats.html">
+    <span class="rn-arrow"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#5A4035" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span>
+  </a>
+</footer>
+<script>const p=document.getElementById('prog');window.addEventListener('scroll',()=>{const h=document.documentElement;p.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'})</script>
+</body>
+</html>
